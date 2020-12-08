@@ -13,6 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -35,11 +37,13 @@ public class LoginResource {
      * Retrieves representation of an instance of dbcs.rest.LoginResource
      * @return an instance of java.lang.String
      */
+    @Path("/{username}")
     @GET
     @Produces("application/json")
-    public String getJson() {
-        //TODO return proper representation object
-        throw new UnsupportedOperationException();
+    public Response getLogin(@PathParam("username") String username, @Context HttpHeaders headers) {
+        return Response.status(Response.Status.OK).
+                entity("{ \"nif\": \""+username+"\", \"message\": \"" + "CORRECTO" + "\"}")
+                .build();
     }
 
     /**
