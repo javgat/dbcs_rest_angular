@@ -1,0 +1,42 @@
+<h3>Catalogo</h3>
+<p *ngIf="mostrarMensaje">{{mensaje}}</p>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <form class="form-inline">
+                <fieldset class="form-group col-sm-12"></fieldset>
+                <fieldset class="form-group col-sm-1">
+                    <a class="btn btn-primary" [routerLink]="['/configuracionpc/nuevo']">Nuevo</a>
+                </fieldset>
+            </form>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Tipo CPU</th>
+                        <th>Velocidad CPU</th>
+                        <th>Memoria RAM</th>
+                        <th>Almacenamiento DD</th>
+                        <th>Velocidad T.Grafica</th>
+                        <th>Memoria T.Grafica</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let conf of configs">
+                        <td><i>{{conf.idconfiguracion}}</i></td>
+                        <td><i>{{conf.tipocpu}}</i></td>
+                        <td><i>{{conf.velocidadcpu}}</i></td>
+                        <td><i>{{conf.capacidadram}}</i></td>
+                        <td><i>{{conf.capacidaddd}}</i></td>
+                        <td><i>{{conf.velocidadtarjetagrafica}}</i></td>
+                        <td><i>{{conf.memoriatarjetagrafica}}</i></td>
+                        <td><i>{{conf.precio}}</i></td>
+                        <td><a class="btn btn-info" [routerLink]="['/configuracionpc',conf.idconfiguracion,'modificar']">Modificar</a></td>
+                        <td><a class="btn btn-danger" (click)="borrar(conf.idconfiguracion)">Borrar</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

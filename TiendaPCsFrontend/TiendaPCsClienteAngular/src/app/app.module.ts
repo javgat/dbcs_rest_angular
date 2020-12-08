@@ -9,12 +9,14 @@ import { LoginComponent } from './login/login.component';
 
 import { ClienteApiRestService } from './shared/cliente-api-rest.service';
 import { DataService } from './shared/data.service';
+import { CatalogoComponent } from './catalogo/catalogo.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    CatalogoComponent
   ],
   imports: [
     BrowserModule,

@@ -10,3 +10,14 @@ export interface EmpleadoLogin{
     nif: String,
     password: String
 }
+
+export interface Configuracionpc{
+    idconfiguracion : Number,
+    tipocpu : String,
+    velocidadcpu : Number,
+    capacidadram : Number,
+    capacidaddd : Number,
+    velocidadtarjetagrafica : Number,
+    memoriatarjetagrafica : Number,
+    precio: Number
+}

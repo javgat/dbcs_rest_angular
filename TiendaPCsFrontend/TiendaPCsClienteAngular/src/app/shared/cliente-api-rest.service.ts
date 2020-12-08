@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
-//import { Vino } from './app.model';
+import { Configuracionpc } from './app.model';
 import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class ClienteApiRestService {
@@ -25,6 +25,16 @@ export class ClienteApiRestService {
         'Content-Type': 'application/json',
          Authorization: pass as string
       })});
+  }
+
+  getAllConfiguracionpc() : Observable<HttpResponse<Configuracionpc[]>>{
+    let url = ClienteApiRestService.BASE_URI + '/configuracion';
+    return this.http.get<Configuracionpc[]>(url, {observe: 'response'});
+  }
+
+  borrarConfiguracion(id : Number) : Observable<HttpResponse<any>>{
+    let url = ClienteApiRestService.BASE_URI + '/configuracion/'+id;
+    return this.http.delete<any>(url, {observe: 'response'});
   }
   /*
   // Ejemplo de get con retorno del cuerpo del response

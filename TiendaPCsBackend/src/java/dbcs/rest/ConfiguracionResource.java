@@ -5,6 +5,7 @@
  */
 package dbcs.rest;
 
+import dbcs.dominio.Configuracionpc;
 import dbcs.persistencia.ConfiguracionpcFacadeLocal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +21,7 @@ import javax.ws.rs.core.Response;
 import javax.ejb.EJB;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.ws.rs.DELETE;
 
 /**
  * REST Web Service
@@ -47,10 +49,34 @@ public class ConfiguracionResource {
     @Produces("application/json")
     public Response getJson() {
         return Response.status(Response.Status.OK)
-                    .entity(confF.findAll().get(0))
+                    .entity(confF.findAll().toArray(new Configuracionpc[0]))
+                    .build();
+    }
+    
+    @DELETE
+    @Path("{idconfig}")
+    @Produces("application/json")
+    public Response deleteConfig(@PathParam("idconfig") Integer idConf){
+        if(removeConfig(idConf))
+            return Response
+                    .status(Response.Status.OK)
+                    .entity("{ \"message\": \"" + "Configuracion Borrada con exito" + "\"}")
+                    .build();
+        else
+            return Response
+                    .status(Response.Status.FORBIDDEN)
+                    .entity("{ \"message\": \"" + "Error al borrar la configuracion" + "\"}")
                     .build();
     }
 
+    private boolean removeConfig(Integer idConf){
+        Configuracionpc conf = confF.find(idConf);
+        if(conf==null)
+            return false;
+        confF.remove(conf);
+        return true;
+    }
+    
     /**
      * PUT method for updating or creating an instance of ConfiguracionResource
      * @param content representation for the resource
