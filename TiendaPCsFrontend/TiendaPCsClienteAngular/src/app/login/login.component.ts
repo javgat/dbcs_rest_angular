@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router'; 
+
 
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
-import { Usuario} from '../shared/app.model';
+import { EmpleadoLogin} from '../shared/app.model';
 import { DataService } from '../shared/data.service';
 
 @Component({
@@ -18,15 +20,15 @@ export class LoginComponent implements OnInit {
 
   mostrarMensaje: boolean;
   mensaje: string;
-  usuario = this.usuarioVacio as Usuario;
+  usuario = this.usuarioVacio as EmpleadoLogin;
 
-  constructor( private clienteApiRest: ClienteApiRestService, private datos: DataService) {
+  constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService, private datos: DataService) {
     this.mensaje = "";
     this.mostrarMensaje = false;
   }
 
-  ngOnInit(): void {
-    console.log("Dentro funcion ngOnInit de Listar");
+  ngOnInit(): void {//Por defecto, borrarlo
+    console.log("Dentro funcion ngOnInit de Login");
     // capturamos valor de mostrarMensaje. Recordar que la variable es un Observable
     this.datos.mostrarMensajeActual.subscribe(
       valor => this.mostrarMensaje = valor
@@ -47,9 +49,11 @@ export class LoginComponent implements OnInit {
         if(resp.status < 400){
           this.mostrarMensaje = true;
           this.mensaje = "Inicio de sesion con exito";
+          this.router.navigate(['catalogo']); // Te redirecciona pero aun no existe otro componente angular (decidir a donde redirecciona tb) -> a catalogo configs
         }else{
+          // Aqui coger de la respuesta del servidor el tipo de error que da
           this.mostrarMensaje = true;
-          this.mensaje = "Error al iniciar sesion";
+          this.mensaje = "Error al iniciar sesion, nombre y/o clave incorrectos";
         }
       },
       err => {

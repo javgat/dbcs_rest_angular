@@ -9,10 +9,22 @@ export class ClienteApiRestService {
   private static readonly BASE_URI = 'http://localhost:8080/TiendaPCsBackend/webresources';
   constructor(private http: HttpClient) { } // inyectamos el modulo HttpClientModule
 
-  getLogin(id: String, pass: String) : Observable<HttpResponse<String>>{
+  getLogin(id: String, pass: String): Observable<HttpResponse<String>> {
     let url = ClienteApiRestService.BASE_URI + '/login/' + id;
     // de alguna manera meter la password
-    return this.http.get<String>(url, { observe: 'response' });
+    // No me deja usar el options declarado antes
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'my-auth-token'
+      }),
+      observe: 'response'
+    };
+    return this.http.get<String>(url, {observe: 'response',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+         Authorization: pass as string
+      })});
   }
   /*
   // Ejemplo de get con retorno del cuerpo del response

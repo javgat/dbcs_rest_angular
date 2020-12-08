@@ -41,6 +41,8 @@ public class LoginResource {
     @GET
     @Produces("application/json")
     public Response getLogin(@PathParam("username") String username, @Context HttpHeaders headers) {
+        String password = headers.getRequestHeader("Authorization").get(0);
+        System.out.println("Usuario: "+username+", Password:"+password);
         return Response.status(Response.Status.OK).
                 entity("{ \"nif\": \""+username+"\", \"message\": \"" + "CORRECTO" + "\"}")
                 .build();

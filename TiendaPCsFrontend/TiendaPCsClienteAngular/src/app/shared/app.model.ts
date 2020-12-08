@@ -6,7 +6,7 @@
     id: Number,
     nombrecomercial: String
 }*/
-export interface Usuario{
+export interface EmpleadoLogin{
     nif: String,
     password: String
 }
