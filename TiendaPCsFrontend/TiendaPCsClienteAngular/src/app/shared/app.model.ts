@@ -11,6 +11,11 @@ export interface EmpleadoLogin{
     password: String
 }
 
+export interface Empleado{
+    nif: String,
+    pais: String
+}
+
 export interface Configuracionpc{
     idconfiguracion : Number,
     tipocpu : String,
@@ -20,4 +25,14 @@ export interface Configuracionpc{
     velocidadtarjetagrafica : Number,
     memoriatarjetagrafica : Number,
     precio: Number
+}
+
+export interface Currency{
+    code: String,
+    name: String,
+    symbol: String
+}
+
+export interface ArrayCurrency{
+    currencies : Currency[]
 }

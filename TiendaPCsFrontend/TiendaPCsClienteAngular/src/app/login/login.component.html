@@ -2,12 +2,12 @@
 <form (ngSubmit)='loginSubmit()'>
     <div class="form-group">
         <label for="inputNif">Username</label>
-        <input type="text" class="form-control" required name="inputUsername" aria-describedby="usernameHelp" [(ngModel)]="usuario.nif">
+        <input type="text" class="form-control" required name="inputUsername" aria-describedby="usernameHelp" [(ngModel)]="empleadoLogin.nif">
         <small id="usernameHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
     </div>
     <div class="form-group">
         <label for="inputPassword">Password</label>
-        <input type="password" class="form-control" required name="inputPassword" [(ngModel)]="usuario.password">
+        <input type="password" class="form-control" required name="inputPassword" [(ngModel)]="empleadoLogin.password">
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

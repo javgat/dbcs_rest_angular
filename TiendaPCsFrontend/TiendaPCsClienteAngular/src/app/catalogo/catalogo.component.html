@@ -6,7 +6,7 @@
             <form class="form-inline">
                 <fieldset class="form-group col-sm-12"></fieldset>
                 <fieldset class="form-group col-sm-1">
-                    <a class="btn btn-primary" [routerLink]="['/configuracionpc/nuevo']">Nuevo</a>
+                    <a class="btn btn-primary" [routerLink]="['/catalogo/nuevo']">Nuevo</a>
                 </fieldset>
             </form>
             <table class="table table-striped">
@@ -32,7 +32,7 @@
                         <td><i>{{conf.velocidadtarjetagrafica}}</i></td>
                         <td><i>{{conf.memoriatarjetagrafica}}</i></td>
                         <td><i>{{conf.precio}}</i></td>
-                        <td><a class="btn btn-info" [routerLink]="['/configuracionpc',conf.idconfiguracion,'modificar']">Modificar</a></td>
+                        <td><a class="btn btn-info" [routerLink]="['/catalogo',conf.idconfiguracion,'modificar']">Modificar</a></td>
                         <td><a class="btn btn-danger" (click)="borrar(conf.idconfiguracion)">Borrar</a></td>
                     </tr>
                 </tbody>

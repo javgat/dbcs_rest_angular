@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
-import { EmpleadoLogin} from '../shared/app.model';
+import { EmpleadoLogin, Empleado} from '../shared/app.model';
 import { DataService } from '../shared/data.service';
 
 @Component({
@@ -13,14 +13,14 @@ import { DataService } from '../shared/data.service';
 })
 export class LoginComponent implements OnInit {
 
-  usuarioVacio = {
+  empleadoLoginVacio = {
     nif: "",
     password: ""
   }
 
   mostrarMensaje: boolean;
   mensaje: string;
-  usuario = this.usuarioVacio as EmpleadoLogin;
+  empleadoLogin = this.empleadoLoginVacio as EmpleadoLogin;
 
   constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService, private datos: DataService) {
     this.mensaje = "";
@@ -44,11 +44,18 @@ export class LoginComponent implements OnInit {
 
   loginSubmit(){
     console.log("Enviando el formulario");
-    this.clienteApiRest.getLogin(this.usuario.nif, this.usuario.password).subscribe(
+    this.clienteApiRest.getLogin(this.empleadoLogin.nif, this.empleadoLogin.password).subscribe(
       resp => {
         if(resp.status < 400){
           this.mostrarMensaje = true;
           this.mensaje = "Inicio de sesion con exito";
+          // Aqui coger datos del empleado (pais)
+          //this.copiaEmpleado(this.empleadoLogin.nif);
+          let emp = {
+            nif : this.empleadoLogin.nif,
+            pais : 'Great Britain'
+          } as Empleado;
+          this.datos.cambiarEmpleado(emp);
           this.router.navigate(['catalogo']); // Te redirecciona pero aun no existe otro componente angular (decidir a donde redirecciona tb) -> a catalogo configs
         }else{
           // Aqui coger de la respuesta del servidor el tipo de error que da
@@ -61,6 +68,28 @@ export class LoginComponent implements OnInit {
         throw err;
       }
     );
+  }
+
+  copiaEmpleado(nif: String){
+    this.clienteApiRest.getEmpleado(nif).subscribe(
+      resp =>{
+        if(resp.status < 400){
+          let emp = this.datos.empleadoVacio;
+          if(resp.body !=null)
+            emp = {
+              nif : nif,
+              pais : resp.body.pais
+            } as Empleado;
+          this.datos.cambiarEmpleado(emp);
+        }else{
+          console.log("Error al obtener los datos del empleado, respuesta incorrecta: "+ resp.status);
+        }
+      },
+      err => {
+        console.log("Error al obtener los datos del empleado: " + err.message);
+        throw err;
+      }
+    )
   }
 
 }

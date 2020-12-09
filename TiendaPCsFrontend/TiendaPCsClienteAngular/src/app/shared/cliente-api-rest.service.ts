@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { Configuracionpc } from './app.model';
+import { Configuracionpc, Empleado } from './app.model';
 import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class ClienteApiRestService {
@@ -25,6 +25,11 @@ export class ClienteApiRestService {
         'Content-Type': 'application/json',
          Authorization: pass as string
       })});
+  }
+
+  getEmpleado(nif: String): Observable<HttpResponse<Empleado>>{
+    let url = ClienteApiRestService.BASE_URI + '/empleado/'+nif;
+    return this.http.get<Empleado>(url, {observe : 'response'});
   }
 
   getAllConfiguracionpc() : Observable<HttpResponse<Configuracionpc[]>>{
