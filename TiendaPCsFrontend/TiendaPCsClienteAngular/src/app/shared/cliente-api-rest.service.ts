@@ -47,6 +47,12 @@ export class ClienteApiRestService {
     let url = ClienteApiRestService.BASE_URI + '/configuracion';
     return this.http.post<Configuracionpc>(url, conf, {observe: 'response'})
   }
+
+  modificarConfiguracionpc(conf : Configuracionpc) : Observable<HttpResponse<any>>{
+    let url = ClienteApiRestService.BASE_URI + '/configuracion/'+conf.idconfiguracion;
+    return this.http.put<Configuracionpc>(url, conf, {observe: 'response'})
+  }
+  
   /*
   // Ejemplo de get con retorno del cuerpo del response
   getAllVinos() {

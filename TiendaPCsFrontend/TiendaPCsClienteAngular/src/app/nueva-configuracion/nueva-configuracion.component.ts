@@ -29,8 +29,7 @@ export class NuevaConfiguracionComponent implements OnInit {
       valor => this.empleado = valor
     )
   }
-
-
+  
   ngOnInit(): void {
 
   }

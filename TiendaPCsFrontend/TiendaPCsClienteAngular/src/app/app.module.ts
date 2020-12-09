@@ -11,6 +11,7 @@ import { ClienteApiRestService } from './shared/cliente-api-rest.service';
 import { DataService } from './shared/data.service';
 import { CatalogoComponent } from './catalogo/catalogo.component';
 import { NuevaConfiguracionComponent } from './nueva-configuracion/nueva-configuracion.component';
+import { ModificarConfiguracionComponent } from './modificar-configuracion/modificar-configuracion.component';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { NuevaConfiguracionComponent } from './nueva-configuracion/nueva-configu
     AppComponent,
     LoginComponent,
     CatalogoComponent,
-    NuevaConfiguracionComponent
+    NuevaConfiguracionComponent,
+    ModificarConfiguracionComponent
   ],
   imports: [
     BrowserModule,
