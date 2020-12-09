@@ -29,7 +29,7 @@ export class NuevaConfiguracionComponent implements OnInit {
       valor => this.empleado = valor
     )
   }
-  
+
   ngOnInit(): void {
 
   }
@@ -53,6 +53,7 @@ export class NuevaConfiguracionComponent implements OnInit {
         throw err;
       }
     );
+    //igual redireccione si o si?
   }
 
 }

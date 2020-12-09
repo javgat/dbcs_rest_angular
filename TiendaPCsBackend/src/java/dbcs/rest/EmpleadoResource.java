@@ -61,8 +61,10 @@ public class EmpleadoResource {
                     .entity("{ \"message\": \"Empleado no encontrado\"}")
                     .build();
             }
+            String pais = emp.getUsuario().getPais();
             return Response.status(Response.Status.OK)
-                    .entity(emp)
+                    .entity("{\"nif\" : \""+nif+"\","
+                            + "\"pais\" : \""+pais+"\"}")
                     .build();
         }catch(Exception ex){
             Logger.getLogger(EmpleadoResource.class.getName()).log(Level.SEVERE, null, ex);

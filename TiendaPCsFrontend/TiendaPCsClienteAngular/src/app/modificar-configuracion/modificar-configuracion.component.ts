@@ -46,7 +46,24 @@ export class ModificarConfiguracionComponent implements OnInit {
 
   onSubmit() {
     console.log("Enviando modificacion de la configuracion...");
-    this.clienteApiRest.modificarConfiguracionpc(this.configuracion);
+    this.clienteApiRest.modificarConfiguracionpc(this.configuracion).subscribe(
+      resp => {
+        if (resp.status < 400) {
+          //this.mostrarMensaje = true;
+          //this.mensaje = "Exito al crear nueva config";
+          console.log("Nueva configuracion creada");
+          this.router.navigate(['catalogo']); // Te redirecciona pero aun no existe otro componente angular (decidir a donde redirecciona tb) -> a catalogo configs
+        } else {
+          // Aqui coger de la respuesta del servidor el tipo de error que da
+          console.log("Error al crear nueva configuracion");
+        }
+      },
+      err => {
+        console.log("Error en crear configuracion: " + err.message);
+        throw err;
+      }
+    );
+    //igual redireccione si o si?
   }
 
 }

@@ -2,10 +2,10 @@
 <form (ngSubmit)='onSubmit()'>
     <div class="form-group">
         <p>Tipo CPU</p>
-        <input type="radio" id="inputIntel" required name="inputTipoCPU" value="1" [(ngModel)]="configuracion.tipocpu">
-        <label for="inputIntel">Intel 1</label><br/>
-        <input type="radio" id="inputAMD" required name="inputTipoCPU" value="2" [(ngModel)]="configuracion.tipocpu">
-        <label for="inputAMD">AMD 2</label>
+        <input type="radio" id="inputIntel" required name="inputTipoCPU" value="Intel" [(ngModel)]="configuracion.tipocpu">
+        <label for="inputIntel">Intel</label><br/>
+        <input type="radio" id="inputAMD" required name="inputTipoCPU" value="AMD" [(ngModel)]="configuracion.tipocpu">
+        <label for="inputAMD">AMD</label>
         <!--EN ese orden??-->
     </div>
     <div class="form-group">

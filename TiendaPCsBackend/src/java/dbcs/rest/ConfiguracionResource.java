@@ -19,6 +19,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.Response;
 import javax.ejb.EJB;
+import javax.json.JsonObject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.DELETE;
@@ -48,7 +49,7 @@ public class ConfiguracionResource {
      */
     @GET
     @Produces("application/json")
-    public Response getJson() {
+    public Response getCatalogo() {
         return Response.status(Response.Status.OK)
                     .entity(confF.findAll().toArray(new Configuracionpc[0]))
                     .build();
@@ -58,7 +59,7 @@ public class ConfiguracionResource {
     @Path("{idconfig}")
     @Produces("application/json")
     public Response deleteConfig(@PathParam("idconfig") Integer idConf){
-        if(removeConfig(idConf))
+        if(confF.removeConfig(idConf))
             return Response
                     .status(Response.Status.OK)
                     .entity("{ \"message\": \"" + "Configuracion Borrada con exito" + "\"}")
@@ -70,20 +71,28 @@ public class ConfiguracionResource {
                     .build();
     }
 
-    private boolean removeConfig(Integer idConf){
-        Configuracionpc conf = confF.find(idConf);
-        if(conf==null)
-            return false;
-        confF.remove(conf);
-        return true;
-    }
     
     @POST
     @Produces("application/json")
-    public Response postConfig(Configuracionpc conf){
-        //confF.create(conf);//Probablemente de error pero que espabile la BD
-        return Response
+    public Response postConfig(JsonObject conf){
+        if(!(conf.containsKey("velocidadcpu") && conf.containsKey("capacidadram") &&
+                conf.containsKey("capacidaddd") && conf.containsKey("velocidadtarjetagrafica") &&
+                conf.containsKey("memoriatarjetagrafica") && conf.containsKey("tipocpu"))){
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("\"mensaje\":\"faltan datos o las claves no son correctas\"").build();
+        }
+        int velCPU = conf.getInt("velocidadcpu");
+        int capRAM = conf.getInt("capacidadram");
+        int capDD = conf.getInt("capacidaddd");
+        int velTarGraf = conf.getInt("velocidadtarjetagrafica");
+        int memTarGraf = conf.getInt("memoriatarjetagrafica");
+        String tipoCPU = conf.getString("tipocpu");
+        float precio = conf.containsKey("precio") ? (float)conf.getJsonNumber("precio").doubleValue(): 0;
+        if(confF.addConfiguracion(velCPU, capRAM, capDD, velTarGraf, memTarGraf, tipoCPU, precio))
+            return Response
                     .status(Response.Status.OK).build();
+        else
+            return Response.status(Response.Status.FORBIDDEN).build();
     }
     
     
@@ -95,9 +104,23 @@ public class ConfiguracionResource {
     @PUT
     @Path("{idConfig}")
     @Consumes("application/json")
-    public Response modificarConfiguracion(@PathParam("idconfig") Integer idConf, Configuracionpc conf) {
-        // confF.edit(conf);
-        return Response.status(Response.Status.OK).build();
+    public Response modificarConfiguracion(@PathParam("idConfig") Integer idConf, JsonObject conf) {
+        int idConfiguracion = idConf;
+        int velCPU = getIntDefault("velocidadcpu", conf);
+        int capRAM = getIntDefault("capacidadram", conf);
+        int capDD = getIntDefault("capacidaddd", conf);
+        int velTarGraf = getIntDefault("velocidadtarjetagrafica", conf);
+        int memTarGraf = getIntDefault("memoriatarjetagrafica", conf);
+        String tipoCPU = conf.containsKey("tipocpu") ? conf.getString("tipocpu") : null;
+        float precio = conf.containsKey("precio") ? Float.valueOf(conf.getString("precio")) : 0;
+        if(confF.editConfiguracion(idConfiguracion, velCPU, capRAM, capDD, velTarGraf, memTarGraf, tipoCPU, precio))
+            return Response.status(Response.Status.OK).build();
+        else
+            return Response.status(Response.Status.FORBIDDEN).build();
+    }
+    
+    private int getIntDefault(String clave, JsonObject conf){
+        return conf.containsKey(clave) ? conf.getInt(clave) : 0;
     }
 
     private ConfiguracionpcFacadeLocal lookupConfiguracionpcFacadeLocal() {

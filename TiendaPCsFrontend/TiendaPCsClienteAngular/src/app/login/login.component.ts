@@ -50,12 +50,12 @@ export class LoginComponent implements OnInit {
           this.mostrarMensaje = true;
           this.mensaje = "Inicio de sesion con exito";
           // Aqui coger datos del empleado (pais)
-          //this.copiaEmpleado(this.empleadoLogin.nif);
-          let emp = {
+          this.copiaEmpleado(this.empleadoLogin.nif);
+          /*let emp = {
             nif : this.empleadoLogin.nif,
             pais : 'Great Britain'
           } as Empleado;
-          this.datos.cambiarEmpleado(emp);
+          this.datos.cambiarEmpleado(emp);*/
           this.router.navigate(['catalogo']); // Te redirecciona pero aun no existe otro componente angular (decidir a donde redirecciona tb) -> a catalogo configs
         }else{
           // Aqui coger de la respuesta del servidor el tipo de error que da

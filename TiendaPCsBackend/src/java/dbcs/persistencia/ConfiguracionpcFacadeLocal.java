@@ -30,4 +30,12 @@ public interface ConfiguracionpcFacadeLocal {
 
     int count();
     
+    public boolean removeConfig(Integer idConf);
+    
+    public Boolean editConfiguracion(int idConfiguracion, int velCPU, int capRAM,
+            int capDD, int velTarGraf, int memTarGraf, String tipoCPU, float precio);
+    
+    public Boolean addConfiguracion(int velCPU, int capRAM, int capDD, int velTarGraf,
+            int memTarGraf, String tipoCPU, float precio);
+    
 }
