@@ -32,6 +32,10 @@ public class EmpleadoResource {
 
     @Context
     private UriInfo context;
+    
+    private static final String EMP_NOT_FOUND = "No existe ese empleado";
+    private static final String EMP_ERROR = "Error interno del servidor";
+    private static final String EMP_AUTH = "No tienes permisos para acceder a esa informacion";
 
     /**
      * Creates a new instance of EmpleadoResource
@@ -44,7 +48,7 @@ public class EmpleadoResource {
      * @return an instance of java.lang.String
      */
     @GET
-    @Produces("application/json")
+    @Produces("application/json")  // IMPlementar otras operaciones REST que no utilizamos? (Get de todo, etc)
     public String getJson() {
         //TODO return proper representation object
         throw new UnsupportedOperationException();
@@ -53,12 +57,12 @@ public class EmpleadoResource {
     @GET
     @Path("{nif}")
     @Produces("application/json")
-    public Response getEmpleado(@PathParam("nif") String nif){
+    public Response getEmpleado(@PathParam("nif") String nif){// Habra que exigir autenticacion
         try{
             Empleado emp = empleadoFacade.find(nif);
             if(emp==null){
                 return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{ \"message\": \"Empleado no encontrado\"}")
+                    .entity("{ \"message\": \""+EMP_NOT_FOUND+"\"}")
                     .build();
             }
             String pais = emp.getUsuario().getPais();
@@ -66,10 +70,10 @@ public class EmpleadoResource {
                     .entity("{\"nif\" : \""+nif+"\","
                             + "\"pais\" : \""+pais+"\"}")
                     .build();
-        }catch(Exception ex){
-            Logger.getLogger(EmpleadoResource.class.getName()).log(Level.SEVERE, null, ex);
-            return Response.status(Response.Status.NOT_FOUND)
-                .entity("{ \"message\": \"Empleado no encontrado\"}")
+        }catch(Exception e){
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("{ \"message\": \""+EMP_ERROR+"\"}")
                 .build();
         }
     }
