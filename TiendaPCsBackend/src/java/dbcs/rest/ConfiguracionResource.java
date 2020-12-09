@@ -22,6 +22,7 @@ import javax.ejb.EJB;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.POST;
 
 /**
  * REST Web Service
@@ -77,14 +78,26 @@ public class ConfiguracionResource {
         return true;
     }
     
+    @POST
+    @Produces("application/json")
+    public Response postConfig(Configuracionpc conf){
+        //confF.create(conf);//Probablemente de error pero que espabile la BD
+        return Response
+                    .status(Response.Status.OK).build();
+    }
+    
+    
     /**
      * PUT method for updating or creating an instance of ConfiguracionResource
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
+    @Path("{idConfig}")
     @Consumes("application/json")
-    public void putJson(String content) {
+    public Response modificarConfiguracion(@PathParam("idconfig") Integer idConf, Configuracionpc conf) {
+        // confF.edit(conf);
+        return Response.status(Response.Status.OK).build();
     }
 
     private ConfiguracionpcFacadeLocal lookupConfiguracionpcFacadeLocal() {
