@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
 import { Configuracionpc, Empleado } from './app.model';
 import { Observable } from 'rxjs';
+import { Config } from 'protractor';
 @Injectable({ providedIn: 'root' })
 export class ClienteApiRestService {
 
@@ -40,6 +41,11 @@ export class ClienteApiRestService {
   borrarConfiguracion(id : Number) : Observable<HttpResponse<any>>{
     let url = ClienteApiRestService.BASE_URI + '/configuracion/'+id;
     return this.http.delete<any>(url, {observe: 'response'});
+  }
+
+  addConfiguracionpc(conf : Configuracionpc) : Observable<HttpResponse<any>>{
+    let url = ClienteApiRestService.BASE_URI + '/configuracion';
+    return this.http.post<Configuracionpc>(url, conf, {observe: 'response'})
   }
   /*
   // Ejemplo de get con retorno del cuerpo del response

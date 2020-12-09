@@ -1,0 +1,35 @@
+<p *ngIf="mostrarMensaje">{{mensaje}}</p>
+<form (ngSubmit)='onSubmit()'>
+    <div class="form-group">
+        <label for="tipoCPU">Tipo CPU</label>
+        <input type="radio" id="1" class="form-control" required name="inputTipoCPU" [(ngModel)]="configuracion.tipocpu">
+        <label for="1">Intel 1</label>
+        <input type="radio" id="2" class="form-control" required name="inputTipoCPU" [(ngModel)]="configuracion.tipocpu">
+        <label for="2">AMD 2</label><!--EN ese orden??-->
+    </div>
+    <div class="form-group">
+        <label for="inputvelocidadcpu">Velocidad CPU</label>
+        <input type="number" class="form-control" required name="inputvelocidadcpu" [(ngModel)]="configuracion.velocidadcpu">
+    </div>
+    <div class="form-group">
+        <label for="inputcapacidadram">Capacidad RAM</label>
+        <input type="number" class="form-control" required name="inputcapacidadram" [(ngModel)]="configuracion.capacidadram">
+    </div>
+    <div class="form-group">
+        <label for="inputcapacidaddd">Capacidad DD</label>
+        <input type="number" class="form-control" required name="inputcapacidaddd" [(ngModel)]="configuracion.capacidaddd">
+    </div>
+    <div class="form-group">
+        <label for="inputvelocidadtarjetagrafica">Velocidad T. Grafica</label>
+        <input type="number" class="form-control" required name="inputvelocidadtarjetagrafica" [(ngModel)]="configuracion.velocidadtarjetagrafica">
+    </div>
+    <div class="form-group">
+        <label for="inputmemoriatarjetagrafica">Memoria T. Grafica</label>
+        <input type="number" class="form-control" required name="inputmemoriatarjetagrafica" [(ngModel)]="configuracion.memoriatarjetagrafica">
+    </div>
+    <div class="form-group">
+        <label for="inputprecio">Precio</label>
+        <input type="number" class="form-control" required name="inputprecio" [(ngModel)]="configuracion.precio">
+    </div>  
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

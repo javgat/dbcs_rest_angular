@@ -1,5 +1,6 @@
 import { R3FactoryDelegateType } from '@angular/compiler/src/render3/r3_factory';
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router'; 
 import { Configuracionpc, Empleado, Currency } from '../shared/app.model';
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
 import { RestCountriesService } from '../shared/rest-countries.service'
@@ -24,13 +25,13 @@ export class CatalogoComponent implements OnInit {
     pais:""
   } as Empleado;
 
-  constructor(private clienteApiRest: ClienteApiRestService, private restCS: RestCountriesService,
+  constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService, private restCS: RestCountriesService,
      private frankS: FrankfurterService, private datos: DataService) {
     this.configs = [];
     this.mensaje = "";
     this.mostrarMensaje = false;
     
-    this.empleado = this.datos.empleadoVacio; //esto se puede hacer?? no se typescript
+    this.empleado = this.datos.getEmpleadoVacio();
     console.log("Empleado: "+this.empleado.nif+", pais: "+this.empleado.pais);
   }
 
@@ -39,7 +40,17 @@ export class CatalogoComponent implements OnInit {
       valor => this.empleado = valor
     )
     console.log("Empleado: "+this.empleado.nif+", pais: "+this.empleado.pais);
-    this.getConfigs_AccesoResponse();
+    if(this.empleado.pais==""){
+      this.redirectLogin();
+    }else{
+      this.getConfigs_AccesoResponse();
+    }
+  }
+
+  redirectLogin(){
+    this.mensaje = "Operacion no permitida, inicia sesion con una cuenta para acceder";
+    this.mostrarMensaje=true;
+    this.router.navigate(['login']);
   }
 
   configsPrecioEmpleado(emp: Empleado){
@@ -50,25 +61,29 @@ export class CatalogoComponent implements OnInit {
         if(resp.status < 400){
           if(resp.body != null){
             code = resp.body[0].currencies[0].code;
-            this.frankS.getFactor(code).subscribe(
-              resp => {
-                if(resp.status < 400){   
-                  // cojo factor de conversion de frankfurter
-                  let factor: number = 1; // Factor de division
-                  factor = resp.body.rates.EUR;                           
-                  for(let conf of this.configs){
-                    conf.precio = conf.precio as number / factor;
+            if(code!="EUR"){ //Solo cambiar valores si el codigo no es EUR
+              this.frankS.getFactor(code).subscribe(
+                resp => {
+                  if(resp.status < 400){
+                    // cojo factor de conversion de frankfurter
+                    let factor: number = 1; // Factor de division
+                    factor = resp.body.rates.EUR;
+                    for(let conf of this.configs){
+                      console.log("Precio antes: "+conf.precio);
+                      conf.precio = conf.precio as number / factor;
+                      console.log("Precio despues: "+conf.precio);
+                    }
+                  }else{
+                    this.mensaje = 'Error al acceder a los datos de conversion de monedas';
+                    this.mostrarMensaje = true;
                   }
-                }else{
-                  this.mensaje = 'Error al acceder a los datos de conversion de monedas';
-                  this.mostrarMensaje = true;
+                },
+                err => {
+                  console.log("Error al acceder a Frankfurter Service: " + err.message);
+                  throw err;
                 }
-              },
-              err => {
-                console.log("Error al acceder a Frankfurter Service: " + err.message);
-                throw err;
-              }
-            )
+              )
+            }
           }else
             console.log("Respuesta vacia");
         }else{

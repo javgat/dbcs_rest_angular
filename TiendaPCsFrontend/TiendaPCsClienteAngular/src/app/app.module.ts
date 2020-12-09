@@ -10,13 +10,15 @@ import { LoginComponent } from './login/login.component';
 import { ClienteApiRestService } from './shared/cliente-api-rest.service';
 import { DataService } from './shared/data.service';
 import { CatalogoComponent } from './catalogo/catalogo.component';
+import { NuevaConfiguracionComponent } from './nueva-configuracion/nueva-configuracion.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    CatalogoComponent
+    CatalogoComponent,
+    NuevaConfiguracionComponent
   ],
   imports: [
     BrowserModule,

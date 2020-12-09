@@ -74,7 +74,7 @@ export class LoginComponent implements OnInit {
     this.clienteApiRest.getEmpleado(nif).subscribe(
       resp =>{
         if(resp.status < 400){
-          let emp = this.datos.empleadoVacio;
+          let emp = this.datos.getEmpleadoVacio();
           if(resp.body !=null)
             emp = {
               nif : nif,

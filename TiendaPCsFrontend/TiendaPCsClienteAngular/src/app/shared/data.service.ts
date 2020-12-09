@@ -10,12 +10,8 @@ export class DataService {
   // Usamos mensajes para mostrar el resultado de la operacion
   private mensaje = new BehaviorSubject('Nada'); // hay que inicializarlo
   mensajeActual = this.mensaje.asObservable(); // Lo exponemos como un observable
-  empleadoVacio = {
-    nif:"",
-    pais:""
-  } as Empleado;
 
-  private empleado = new BehaviorSubject(this.empleadoVacio);
+  private empleado = new BehaviorSubject(this.getEmpleadoVacio());
   empleadoActual = this.empleado.asObservable();
 
   // Usamos esta variable para indicar si hay que mostrar o no el mensaje
@@ -31,5 +27,9 @@ export class DataService {
   }
   cambiarEmpleado(emp : Empleado){
     this.empleado.next(emp);
+  }
+
+  getEmpleadoVacio() : Empleado{ // Igual esto mejor
+    return {nif:"", pais:""};
   }
 }
