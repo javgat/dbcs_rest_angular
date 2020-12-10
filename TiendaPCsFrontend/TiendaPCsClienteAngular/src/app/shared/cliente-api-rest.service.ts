@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { Configuracionpc, Empleado } from './app.model';
+import { Configuracionpc, Empleado, MensajeLogin } from './app.model';
 import { Observable } from 'rxjs';
 import { Config } from 'protractor';
 @Injectable({ providedIn: 'root' })
@@ -10,9 +10,8 @@ export class ClienteApiRestService {
   private static readonly BASE_URI = 'http://localhost:8080/TiendaPCsBackend/webresources';
   constructor(private http: HttpClient) { } // inyectamos el modulo HttpClientModule
 
-  getLogin(id: String, pass: String): Observable<HttpResponse<String>> {
+  getLogin(id: String, pass: String): Observable<HttpResponse<MensajeLogin>> {
     let url = ClienteApiRestService.BASE_URI + '/login/' + id;
-    // de alguna manera meter la password
     // No me deja usar el options declarado antes
     const httpOptions = {
       headers: new HttpHeaders({
@@ -21,7 +20,7 @@ export class ClienteApiRestService {
       }),
       observe: 'response'
     };
-    return this.http.get<String>(url, {observe: 'response',
+    return this.http.get<MensajeLogin>(url, {observe: 'response',
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
          Authorization: pass as string

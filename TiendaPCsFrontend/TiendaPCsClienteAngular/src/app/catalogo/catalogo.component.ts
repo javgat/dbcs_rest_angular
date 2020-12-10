@@ -1,12 +1,14 @@
 import { R3FactoryDelegateType } from '@angular/compiler/src/render3/r3_factory';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router'; 
-import { Configuracionpc, Empleado, Currency } from '../shared/app.model';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Configuracionpc, Empleado, Currency, Mensaje, Tipo } from '../shared/app.model';
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
 import { RestCountriesService } from '../shared/rest-countries.service'
 import { FrankfurterService } from '../shared/frankfurter.service'
 import { DataService } from '../shared/data.service';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { Session } from 'protractor';
+import { SessionService } from '../shared/session.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -16,102 +18,95 @@ import { Observable, BehaviorSubject } from 'rxjs';
 export class CatalogoComponent implements OnInit {
 
   configs: Configuracionpc[];
-  mensaje: String;
-  mostrarMensaje: boolean;
+  mensaje: Mensaje;
   empleado: Empleado;
 
-  empleadoVacio = {
-    nif:"",
-    pais:""
-  } as Empleado;
-
   constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService, private restCS: RestCountriesService,
-     private frankS: FrankfurterService, private datos: DataService) {
+    private frankS: FrankfurterService, private datos: DataService, private session: SessionService) {
     this.configs = [];
-    this.mensaje = "";
-    this.mostrarMensaje = false;
-    
-    this.empleado = this.datos.getEmpleadoVacio();
-    console.log("Empleado: "+this.empleado.nif+", pais: "+this.empleado.pais);
+    this.mensaje = new Mensaje();
+
+    this.empleado = new Empleado();
+    console.log("Empleado: " + this.empleado.nif + ", pais: " + this.empleado.pais);
   }
 
   ngOnInit() {
-    this.datos.empleadoActual.subscribe(
+    this.session.empleadoActual.subscribe(
       valor => this.empleado = valor
     )
-    console.log("Empleado: "+this.empleado.nif+", pais: "+this.empleado.pais);
-    if(this.empleado.pais==""){
-      this.redirectLogin();
-    }else{
-      this.getConfigs_AccesoResponse();
-    }
-  }
-
-  redirectLogin(){
-    this.mensaje = "Operacion no permitida, inicia sesion con una cuenta para acceder";
-    this.mostrarMensaje=true;
-    this.router.navigate(['login']);
-  }
-
-  configsPrecioEmpleado(emp: Empleado){
-    let code = "EUR" as String;
-    // llamo rest-countries con emp.pais
-    this.restCS.getCodeCoin(emp.pais).subscribe(
-      resp => {
-        if(resp.status < 400){
-          if(resp.body != null){
-            code = resp.body[0].currencies[0].code;
-            if(code!="EUR"){ //Solo cambiar valores si el codigo no es EUR
-              this.frankS.getFactor(code).subscribe(
-                resp => {
-                  if(resp.status < 400){
-                    // cojo factor de conversion de frankfurter
-                    let factor: number = 1; // Factor de division
-                    factor = resp.body.rates.EUR;
-                    for(let conf of this.configs){
-                      console.log("Precio antes: "+conf.precio);
-                      conf.precio = conf.precio as number / factor;
-                      console.log("Precio despues: "+conf.precio);
-                    }
-                  }else{
-                    this.mensaje = 'Error al acceder a los datos de conversion de monedas';
-                    this.mostrarMensaje = true;
-                  }
-                },
-                err => {
-                  console.log("Error al acceder a Frankfurter Service: " + err.message);
-                  throw err;
-                }
-              )
-            }
-          }else
-            console.log("Respuesta vacia");
-        }else{
-          this.mensaje = 'Error al acceder a los datos de pais';
-          this.mostrarMensaje = true;
-        }
-      },
-      err => {
-        console.log("Error al acceder a Rest Countries Service: " + err.message);
-        throw err;
+    console.log("Empleado: " + this.empleado.nif + ", pais: " + this.empleado.pais);
+    this.session.autenticadoObs.subscribe(
+      auth => {
+        if (!auth)
+          this.redirectLogin()
+        else
+          this.getConfigs_AccesoResponse();
       }
     )
     
   }
 
-  getConfigs_AccesoResponse() {
-    this.clienteApiRest.getAllConfiguracionpc().subscribe(
+  redirectLogin() {
+    this.datos.cambiarMensaje(new Mensaje("Operacion no permitida, inicia sesion con una cuenta para acceder", Tipo.ERROR, true));
+    this.router.navigate(['login']);
+  }
+
+  configsPrecioEmpleado(emp: Empleado) {
+    let code = "EUR" as String;
+    // llamo rest-countries con emp.pais
+    this.restCS.getCodeCoin(emp.pais).subscribe(
       resp => {
-        console.log("Cabeceras: " + resp.headers.keys());
-        console.log("Status: " + resp.status);
         if (resp.status < 400) {
-          this.configs = resp.body || []; // se accede al cuerpo de la respuesta
+          if (resp.body != null) {
+            code = resp.body[0].currencies[0].code;
+            if (code != "EUR") { //Solo cambiar valores si el codigo no es EUR
+              this.frankS.getFactor(code).subscribe(
+                resp => {
+                  if (resp.status < 400) {
+                    // cojo factor de conversion (division) de frankfurter
+                    let factor = resp.body.rates.EUR;
+                    for (let conf of this.configs) {
+                      console.log("Precio antes: " + conf.precio);
+                      conf.precio = conf.precio as number / factor;
+                      console.log("Precio despues: " + conf.precio);
+                    }
+                  } else {
+                    this.datos.cambiarMensaje(new Mensaje('Error al acceder a los datos de conversion de monedas', Tipo.ERROR, true));
+                  }
+                },
+                err => {
+                  this.datos.cambiarMensaje(new Mensaje("Error al acceder a la api Frankfurter, intentelo mas tarde", Tipo.ERROR, true));
+                  console.log("Error al acceder a Frankfurter Service: " + err.message);
+                  throw err;
+                }
+              )
+            }//else pues se queda igual
+          } else
+            console.log("Error, Respuesta vacia");
         } else {
-          this.mensaje = 'Error al acceder a los datos';
-          this.mostrarMensaje = true;
+          this.datos.cambiarMensaje(new Mensaje("Error al acceder a la api RestCountries, intentelo mas tarde", Tipo.ERROR, true));
         }
       },
       err => {
+        this.datos.cambiarMensaje(new Mensaje("Error al acceder a la api RestCountries, intentelo mas tarde", Tipo.ERROR, true));
+        console.log("Error al acceder a Rest Countries Service: " + err.message);
+        throw err;
+      }
+    )
+
+  }
+
+  getConfigs_AccesoResponse() {
+    this.clienteApiRest.getAllConfiguracionpc().subscribe(
+      resp => {
+        if (resp.status < 400) {
+          this.configs = resp.body || [];
+        } else {
+          this.datos.cambiarMensaje(new Mensaje("Error al acceder a los datos de configuraciones", Tipo.ERROR, true));
+        }
+      },
+      err => {
+        this.datos.cambiarMensaje(new Mensaje("Error al acceder a los datos de configuraciones", Tipo.ERROR, true));
         console.log("Error al traer la lista: " + err.message);
         throw err;
       }
@@ -123,15 +118,14 @@ export class CatalogoComponent implements OnInit {
     this.clienteApiRest.borrarConfiguracion(id).subscribe(
       resp => {
         if (resp.status < 400) {
-          this.mostrarMensaje = true; // actualizamos variable compartida
-          this.mensaje = "Registro borrado con exito"; // actualizamos variable compartida
+          this.datos.cambiarMensaje(new Mensaje("Registro borrado con exito", Tipo.SUCCESS, true));
           this.getConfigs_AccesoResponse(); //Actualizamos la lista de configs en la vista
         } else {
-          this.mostrarMensaje = true;
-          this.mensaje = "Error al eliminar registro";
+          this.datos.cambiarMensaje(new Mensaje("Error al eliminar registro", Tipo.ERROR, true));
         }
       },
       err => {
+        this.datos.cambiarMensaje(new Mensaje("Error al eliminar registro", Tipo.ERROR, true));
         console.log("Error al borrar: " + err.message);
         throw err;
       }

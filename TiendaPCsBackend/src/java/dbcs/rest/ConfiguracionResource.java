@@ -160,7 +160,7 @@ public class ConfiguracionResource {
                 int velTarGraf = getIntDefault("velocidadtarjetagrafica", conf);
                 int memTarGraf = getIntDefault("memoriatarjetagrafica", conf);
                 String tipoCPU = conf.containsKey("tipocpu") ? conf.getString("tipocpu") : null;
-                float precio = conf.containsKey("precio") ? Float.valueOf(conf.getString("precio")) : 0;
+                float precio = conf.containsKey("precio") ? (float)conf.getJsonNumber("precio").doubleValue() : 0;
                 if(confF.editConfiguracion(idConfiguracion, velCPU, capRAM, capDD, velTarGraf, memTarGraf, tipoCPU, precio))
                     return Response.status(Response.Status.OK)
                             .entity(CONF_EDIT_OK)

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Configuracionpc, Empleado } from '../shared/app.model';
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
 import { DataService } from '../shared/data.service';
+import { SessionService } from '../shared/session.service';
 
 @Component({
   selector: 'app-modificar-configuracion',
@@ -24,9 +25,10 @@ export class ModificarConfiguracionComponent implements OnInit {
   };
   empleado: Empleado;
 
-  constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService, private datos: DataService) {
-    this.empleado = this.datos.getEmpleadoVacio();
-    this.datos.empleadoActual.subscribe(
+  constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService,
+    private datos: DataService, private session: SessionService) {
+    this.empleado = new Empleado();
+    this.session.empleadoActual.subscribe(
       valor => this.empleado = valor
     )
   }

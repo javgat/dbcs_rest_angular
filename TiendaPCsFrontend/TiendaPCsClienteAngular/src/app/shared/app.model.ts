@@ -3,9 +3,14 @@ export interface EmpleadoLogin{
     password: String
 }
 
-export interface Empleado{
-    nif: String,
-    pais: String
+export class Empleado{
+    readonly nif: String;
+    readonly pais: String;
+    constructor(nif? : String, pais? : String){
+        this.nif = nif || "";
+        this.pais = pais || "";
+    }
+
 }
 
 export interface Configuracionpc{
@@ -27,4 +32,26 @@ export interface Currency{
 
 export interface ArrayCurrency{
     currencies : Currency[]
+}
+
+export interface MensajeLogin{
+    mensaje : String
+}
+
+export enum Tipo{
+    SUCCESS = "success",
+    ERROR = "danger",
+    WARNING= "warning",
+    INFO="info"
+}
+
+export class Mensaje{
+    readonly texto: String;
+    readonly type : Tipo;
+    readonly mostrar : boolean;
+    constructor(mensaje?:String, type?:Tipo, mostrar?:boolean){
+        this.texto = mensaje || "";
+        this.type = type || Tipo.INFO;
+        this.mostrar = mostrar || false;
+    }
 }

@@ -1,5 +1,5 @@
 <h3>Catalogo</h3>
-<p *ngIf="mostrarMensaje">{{mensaje}}</p>
+<div class="alert alert-{{mensaje.type}}" *ngIf="mensaje.mostrar">{{mensaje.texto}}</div> 
 <div class="container">
     <div class="row">
         <div class="col-sm-12">

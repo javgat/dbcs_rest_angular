@@ -84,8 +84,8 @@ public class LoginResource {
     }
     
     private String makeResponseEntity(String nif, String message){
-        return "{ \"nif\" : \""+nif+"\","
-                + "\"message\" : \""+message+"\"}";
+        return "{\"mensaje\" : \""+message+"\"}";
+                //"{ \"nif\" : \""+nif+"\","
     }
 
     private EmpleadoFacadeLocal lookupEmpleadoFacadeLocal() {
