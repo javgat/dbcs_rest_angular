@@ -32,4 +32,8 @@ export class DataService {
     let oldMsn = this.mensaje.value;
     this.mensaje.next(new Mensaje(oldMsn.texto, type, oldMsn.mostrar));
   }
+
+  borrarMensaje(){
+    this.cambiarMensaje(new Mensaje());
+  }
 }

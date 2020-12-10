@@ -1,7 +1,7 @@
 import { R3FactoryDelegateType } from '@angular/compiler/src/render3/r3_factory';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Configuracionpc, Empleado, Currency, Mensaje, Tipo } from '../shared/app.model';
+import { Configuracionpc, Empleado, Currency, Mensaje, Tipo, ArrayCurrency } from '../shared/app.model';
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
 import { RestCountriesService } from '../shared/rest-countries.service'
 import { FrankfurterService } from '../shared/frankfurter.service'
@@ -9,6 +9,8 @@ import { DataService } from '../shared/data.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Session } from 'protractor';
 import { SessionService } from '../shared/session.service';
+import { HttpResponse } from '@angular/common/http';
+import { PrecioServiceService } from '../shared/precio-service.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -20,14 +22,14 @@ export class CatalogoComponent implements OnInit {
   configs: Configuracionpc[];
   mensaje: Mensaje;
   empleado: Empleado;
+  factor: number;
 
   constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService, private restCS: RestCountriesService,
-    private frankS: FrankfurterService, private datos: DataService, private session: SessionService) {
+    private frankS: FrankfurterService, private datos: DataService, private session: SessionService, private pres: PrecioServiceService) {
     this.configs = [];
     this.mensaje = new Mensaje();
-
+    this.factor = 1;
     this.empleado = new Empleado();
-    console.log("Empleado: " + this.empleado.nif + ", pais: " + this.empleado.pais);
   }
 
   ngOnInit() {
@@ -35,6 +37,14 @@ export class CatalogoComponent implements OnInit {
       valor => this.empleado = valor
     )
     console.log("Empleado: " + this.empleado.nif + ", pais: " + this.empleado.pais);
+    this.datos.mensajeActual.subscribe(
+      mens => this.mensaje = mens
+    )
+    this.pres.factorObs.subscribe(
+      factor => {
+        this.factor = factor
+      }
+    )
     this.session.autenticadoObs.subscribe(
       auth => {
         if (!auth)
@@ -43,7 +53,7 @@ export class CatalogoComponent implements OnInit {
           this.getConfigs_AccesoResponse();
       }
     )
-    
+
   }
 
   redirectLogin() {
@@ -51,49 +61,12 @@ export class CatalogoComponent implements OnInit {
     this.router.navigate(['login']);
   }
 
-  configsPrecioEmpleado(emp: Empleado) {
-    let code = "EUR" as String;
-    // llamo rest-countries con emp.pais
-    this.restCS.getCodeCoin(emp.pais).subscribe(
-      resp => {
-        if (resp.status < 400) {
-          if (resp.body != null) {
-            code = resp.body[0].currencies[0].code;
-            if (code != "EUR") { //Solo cambiar valores si el codigo no es EUR
-              this.frankS.getFactor(code).subscribe(
-                resp => {
-                  if (resp.status < 400) {
-                    // cojo factor de conversion (division) de frankfurter
-                    let factor = resp.body.rates.EUR;
-                    for (let conf of this.configs) {
-                      console.log("Precio antes: " + conf.precio);
-                      conf.precio = conf.precio as number / factor;
-                      console.log("Precio despues: " + conf.precio);
-                    }
-                  } else {
-                    this.datos.cambiarMensaje(new Mensaje('Error al acceder a los datos de conversion de monedas', Tipo.ERROR, true));
-                  }
-                },
-                err => {
-                  this.datos.cambiarMensaje(new Mensaje("Error al acceder a la api Frankfurter, intentelo mas tarde", Tipo.ERROR, true));
-                  console.log("Error al acceder a Frankfurter Service: " + err.message);
-                  throw err;
-                }
-              )
-            }//else pues se queda igual
-          } else
-            console.log("Error, Respuesta vacia");
-        } else {
-          this.datos.cambiarMensaje(new Mensaje("Error al acceder a la api RestCountries, intentelo mas tarde", Tipo.ERROR, true));
-        }
-      },
-      err => {
-        this.datos.cambiarMensaje(new Mensaje("Error al acceder a la api RestCountries, intentelo mas tarde", Tipo.ERROR, true));
-        console.log("Error al acceder a Rest Countries Service: " + err.message);
-        throw err;
-      }
-    )
-
+  configsPrecio() {
+    for (let conf of this.configs) {
+      console.log("Precio antes: " + conf.precio);
+      conf.precio = conf.precio as number / this.factor;
+      console.log("Precio despues: " + conf.precio);
+    }
   }
 
   getConfigs_AccesoResponse() {
@@ -101,6 +74,7 @@ export class CatalogoComponent implements OnInit {
       resp => {
         if (resp.status < 400) {
           this.configs = resp.body || [];
+          this.configsPrecio();
         } else {
           this.datos.cambiarMensaje(new Mensaje("Error al acceder a los datos de configuraciones", Tipo.ERROR, true));
         }
@@ -111,7 +85,7 @@ export class CatalogoComponent implements OnInit {
         throw err;
       }
     )
-    this.configsPrecioEmpleado(this.empleado);
+    
   }
 
   borrar(id: Number) {
@@ -131,5 +105,11 @@ export class CatalogoComponent implements OnInit {
       }
     )
   }
+
+  logout() {
+    this.session.logout(this.datos);
+  }
+
+
 
 }

@@ -1,31 +1,31 @@
-<!--<p *ngIf="mostrarMensaje">{{mensaje}}</p>-->
-<form (ngSubmit)='onSubmit()'>
+<div class="alert alert-{{mensaje.type}}" *ngIf="mensaje.mostrar">{{mensaje.texto}}</div> 
+<a class="btn btn-primary" (click)="logout()">Cerrar sesión</a>
+<form (ngSubmit)='onSubmit()' ngNativeValidate>
     <div class="form-group">
         <p>Tipo CPU</p>
-        <input type="radio" id="inputIntel" required name="inputTipoCPU" value="Intel" [(ngModel)]="configuracion.tipocpu">
+        <input type="radio" id="inputIntel" required name="inputTipoCPU" value="Intel" [(ngModel)]="configuracion.tipocpu"  >
         <label for="inputIntel">Intel</label><br/>
         <input type="radio" id="inputAMD" required name="inputTipoCPU" value="AMD" [(ngModel)]="configuracion.tipocpu">
         <label for="inputAMD">AMD</label>
-        <!--EN ese orden??-->
     </div>
     <div class="form-group">
         <label for="inputvelocidadcpu">Velocidad CPU</label>
-        <input type="number" class="form-control" required name="inputvelocidadcpu"
+        <input type="number" min="0" class="form-control" required name="inputvelocidadcpu"
             [(ngModel)]="configuracion.velocidadcpu">
     </div>
     <div class="form-group">
         <label for="inputcapacidadram">Capacidad RAM</label>
-        <input type="number" class="form-control" required name="inputcapacidadram"
+        <input type="number" min="0" class="form-control" required name="inputcapacidadram"
             [(ngModel)]="configuracion.capacidadram">
     </div>
     <div class="form-group">
         <label for="inputcapacidaddd">Capacidad DD</label>
-        <input type="number" class="form-control" required name="inputcapacidaddd"
+        <input type="number" min="0" class="form-control" required name="inputcapacidaddd"
             [(ngModel)]="configuracion.capacidaddd">
     </div>
     <div class="form-group">
         <label for="inputvelocidadtarjetagrafica">Velocidad T. Grafica</label>
-        <input type="number" class="form-control" required name="inputvelocidadtarjetagrafica"
+        <input type="number" min="0" class="form-control" required name="inputvelocidadtarjetagrafica"
             [(ngModel)]="configuracion.velocidadtarjetagrafica">
     </div>
     <div class="form-group">
@@ -35,7 +35,8 @@
     </div>
     <div class="form-group">
         <label for="inputprecio">Precio</label>
-        <input type="number" class="form-control" required name="inputprecio" [(ngModel)]="configuracion.precio">
+        <input type="number" step="0.01" min="0" class="form-control" required name="inputprecio" [(ngModel)]="configuracion.precio">
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <a class="btn btn-primary" [routerLink]="['/catalogo']">Volver</a>
+    <input type="submit" class="btn btn-primary" value="Guardar configuracion">
 </form>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Empleado } from './app.model';
+import { Empleado, Mensaje, Tipo } from './app.model';
+import { DataService } from './data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,5 +32,15 @@ export class SessionService {
 
   cambiarAutenticado(auth: boolean){
     this.autenticado.next(auth);
+  }
+
+  deauthenticate(){
+    this.autenticado.next(false);
+    this.empleado.next(new Empleado());
+  }
+
+  logout(datos: DataService){
+    this.deauthenticate();
+    datos.cambiarMensaje(new Mensaje("Sesion cerrada con exito", Tipo.INFO, true));
   }
 }

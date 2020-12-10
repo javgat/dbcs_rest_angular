@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Configuracionpc, Empleado } from '../shared/app.model';
+import { Configuracionpc, Empleado, Mensaje, Tipo } from '../shared/app.model';
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
 import { DataService } from '../shared/data.service';
+import { PrecioServiceService } from '../shared/precio-service.service';
 import { SessionService } from '../shared/session.service';
 
 @Component({
@@ -23,39 +24,66 @@ export class NuevaConfiguracionComponent implements OnInit {
     precio: 0
   };
   empleado: Empleado;
-
+  mensaje: Mensaje;
+  factor: number;
   constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService,
-    private datos: DataService, private session: SessionService) {
+    private datos: DataService, private session: SessionService, private pres: PrecioServiceService) {
     this.empleado = new Empleado();
-    this.session.empleadoActual.subscribe(
-      valor => this.empleado = valor
-    )
+    this.mensaje = new Mensaje();
+    this.factor = 1;
   }
 
   ngOnInit(): void {
+    this.datos.borrarMensaje();
+    this.session.empleadoActual.subscribe(
+      valor => this.empleado = valor
+    )
+    this.datos.mensajeActual.subscribe(
+      mens => this.mensaje = mens
+    )
+    this.session.autenticadoObs.subscribe(
+      auth => {
+        if (!auth)
+          this.redirectLogin()
+      }
+    )
+    this.pres.factorObs.subscribe(
+      factor => {
+        this.factor = factor;
+      }
+    )
+  }
 
+  redirectLogin() {
+    this.datos.cambiarMensaje(new Mensaje("Operacion no permitida, inicia sesion con una cuenta para acceder", Tipo.ERROR, true));
+    this.router.navigate(['login']);
   }
 
   onSubmit() {
+
+    this.configuracion.precio = this.configuracion.precio as number * this.factor;
     console.log("Enviando la configuracion");
     this.clienteApiRest.addConfiguracionpc(this.configuracion).subscribe(
       resp => {
         if (resp.status < 400) {
-          //this.mostrarMensaje = true;
-          //this.mensaje = "Exito al crear nueva config";
+          this.datos.cambiarMensaje(new Mensaje("Exito al crear nueva configuracion", Tipo.SUCCESS, true));
           console.log("Nueva configuracion creada");
-          this.router.navigate(['catalogo']); // Te redirecciona pero aun no existe otro componente angular (decidir a donde redirecciona tb) -> a catalogo configs
+          this.router.navigate(['catalogo']);
         } else {
-          // Aqui coger de la respuesta del servidor el tipo de error que da
+          this.datos.cambiarMensaje(new Mensaje("Error al crear nueva configuracion", Tipo.ERROR, true));
           console.log("Error al crear nueva configuracion");
         }
       },
       err => {
+        this.datos.cambiarMensaje(new Mensaje("Error al crear nueva configuracion", Tipo.ERROR, true));
         console.log("Error en crear configuracion: " + err.message);
         throw err;
       }
     );
-    //igual redireccione si o si?
+  }
+
+  logout() {
+    this.session.logout(this.datos);
   }
 
 }

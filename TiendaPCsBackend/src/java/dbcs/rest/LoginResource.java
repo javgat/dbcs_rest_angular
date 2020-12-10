@@ -34,7 +34,7 @@ public class LoginResource {
     @Context
     private UriInfo context;
     
-    private static final String AUTH_OK="Todo correcto";
+    private static final String AUTH_OK="Inicio de sesion con exito";
     private static final String AUTH_WRONG ="Clave incorrecta";
     private static final String AUTH_MISSING ="No hay un empleado con ese nif";
     private static final String AUTH_ERROR= "Error en el acceso";

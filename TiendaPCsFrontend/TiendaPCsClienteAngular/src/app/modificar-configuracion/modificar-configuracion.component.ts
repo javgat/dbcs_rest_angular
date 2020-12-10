@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Configuracionpc, Empleado } from '../shared/app.model';
+import { Configuracionpc, Empleado, Mensaje, Tipo } from '../shared/app.model';
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
 import { DataService } from '../shared/data.service';
 import { SessionService } from '../shared/session.service';
@@ -12,10 +12,9 @@ import { SessionService } from '../shared/session.service';
 })
 export class ModificarConfiguracionComponent implements OnInit {
 
-
   configuracion: Configuracionpc = {
     idconfiguracion: 0,
-    tipocpu: "", // IGual cambiar a que sea un numero si asi lo ahgo en BACKEND
+    tipocpu: "",
     velocidadcpu: 0,
     capacidadram: 0,
     capacidaddd: 0,
@@ -24,15 +23,28 @@ export class ModificarConfiguracionComponent implements OnInit {
     precio: 0
   };
   empleado: Empleado;
+  mensaje: Mensaje;
 
   constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService,
     private datos: DataService, private session: SessionService) {
     this.empleado = new Empleado();
+    this.mensaje = new Mensaje();
+  }
+
+  ngOnInit(): void {
+    this.datos.borrarMensaje();
     this.session.empleadoActual.subscribe(
       valor => this.empleado = valor
     )
-  }
-  ngOnInit(): void {
+    this.datos.mensajeActual.subscribe(
+      mens => this.mensaje = mens
+    )
+    this.session.autenticadoObs.subscribe(
+      auth => {
+        if (!auth)
+          this.redirectLogin()
+      }
+    )
     this.ruta.paramMap.subscribe(
       params => {
         let id = params.get('id');
@@ -46,26 +58,35 @@ export class ModificarConfiguracionComponent implements OnInit {
     )
   }
 
+  redirectLogin() {
+    this.datos.cambiarMensaje(new Mensaje("Operacion no permitida, inicia sesion con una cuenta para acceder", Tipo.ERROR, true));
+    this.router.navigate(['login']);
+  }
+
   onSubmit() {
     console.log("Enviando modificacion de la configuracion...");
     this.clienteApiRest.modificarConfiguracionpc(this.configuracion).subscribe(
       resp => {
         if (resp.status < 400) {
-          //this.mostrarMensaje = true;
-          //this.mensaje = "Exito al crear nueva config";
-          console.log("Nueva configuracion creada");
-          this.router.navigate(['catalogo']); // Te redirecciona pero aun no existe otro componente angular (decidir a donde redirecciona tb) -> a catalogo configs
+          this.datos.cambiarMensaje(new Mensaje("Exito al modificar la configuracion", Tipo.SUCCESS, true));
+          console.log("Configuracion modificada");
+          this.router.navigate(['catalogo']);
         } else {
-          // Aqui coger de la respuesta del servidor el tipo de error que da
-          console.log("Error al crear nueva configuracion");
+          this.datos.cambiarMensaje(new Mensaje("Error al modificar la configuracion", Tipo.ERROR, true));
+          console.log("Error al modificar la configuracion");
         }
       },
       err => {
-        console.log("Error en crear configuracion: " + err.message);
+        this.datos.cambiarMensaje(new Mensaje("Error al modificar la configuracion", Tipo.ERROR, true));
+        console.log("Error en modificar la configuracion: " + err.message);
         throw err;
       }
     );
     //igual redireccione si o si?
+  }
+
+  logout(){
+    this.session.logout(this.datos);
   }
 
 }

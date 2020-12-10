@@ -118,7 +118,7 @@ public class ConfiguracionResource {
                 int velTarGraf = conf.getInt("velocidadtarjetagrafica");
                 int memTarGraf = conf.getInt("memoriatarjetagrafica");
                 String tipoCPU = conf.getString("tipocpu");
-                float precio = conf.containsKey("precio") ? (float)conf.getJsonNumber("precio").doubleValue(): 0;
+                float precio = conf.containsKey("precio") ? (float)conf.getJsonNumber("precio").doubleValue(): 0f;
                 if(confF.addConfiguracion(velCPU, capRAM, capDD, velTarGraf, memTarGraf, tipoCPU, precio))
                     return Response.status(Response.Status.OK)
                             .entity(getMessage(CONF_ADD_OK))
@@ -160,14 +160,14 @@ public class ConfiguracionResource {
                 int velTarGraf = getIntDefault("velocidadtarjetagrafica", conf);
                 int memTarGraf = getIntDefault("memoriatarjetagrafica", conf);
                 String tipoCPU = conf.containsKey("tipocpu") ? conf.getString("tipocpu") : null;
-                float precio = conf.containsKey("precio") ? (float)conf.getJsonNumber("precio").doubleValue() : 0;
+                float precio = conf.containsKey("precio") ? (float)conf.getJsonNumber("precio").doubleValue() : 0f;
                 if(confF.editConfiguracion(idConfiguracion, velCPU, capRAM, capDD, velTarGraf, memTarGraf, tipoCPU, precio))
                     return Response.status(Response.Status.OK)
-                            .entity(CONF_EDIT_OK)
+                            .entity(getMessage(CONF_EDIT_OK))
                             .build();
                 else
                     return Response.status(Response.Status.NOT_FOUND)
-                            .entity(CONF_EDIT_NOT_FOUND)
+                            .entity(getMessage(CONF_EDIT_NOT_FOUND))
                             .build();
             }catch(ClassCastException cce){
                 Logger.getLogger(getClass().getName()).log(Level.WARNING, "exception caught", cce);
