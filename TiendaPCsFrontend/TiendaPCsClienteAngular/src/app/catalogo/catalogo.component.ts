@@ -10,7 +10,6 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { Session } from 'protractor';
 import { SessionService } from '../shared/session.service';
 import { HttpResponse } from '@angular/common/http';
-import { PrecioServiceService } from '../shared/precio-service.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -25,7 +24,7 @@ export class CatalogoComponent implements OnInit {
   factor: number;
 
   constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService, private restCS: RestCountriesService,
-    private frankS: FrankfurterService, private datos: DataService, private session: SessionService, private pres: PrecioServiceService) {
+    private frankS: FrankfurterService, private datos: DataService, private session: SessionService) {
     this.configs = [];
     this.mensaje = new Mensaje();
     this.factor = 1;
@@ -40,7 +39,7 @@ export class CatalogoComponent implements OnInit {
     this.datos.mensajeActual.subscribe(
       mens => this.mensaje = mens
     )
-    this.pres.factorObs.subscribe(
+    this.session.factorObs.subscribe(
       factor => {
         this.factor = factor
       }

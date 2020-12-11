@@ -4,12 +4,12 @@
 <form (ngSubmit)='onSubmit()' ngNativeValidate>
     <div class="form-group">
         <label for="inputvelocidadtarjetagrafica">Velocidad T. Grafica</label>
-        <input type="number" class="form-control" required name="inputvelocidadtarjetagrafica"
+        <input type="number" min="0" max="99999" class="form-control" required name="inputvelocidadtarjetagrafica"
             [(ngModel)]="configuracion.velocidadtarjetagrafica">
     </div>
     <div class="form-group">
         <label for="inputmemoriatarjetagrafica">Memoria T. Grafica</label>
-        <input type="number" class="form-control" required name="inputmemoriatarjetagrafica"
+        <input type="number" min="0" max="99999" class="form-control" required name="inputmemoriatarjetagrafica"
             [(ngModel)]="configuracion.memoriatarjetagrafica">
     </div>
     <a class="btn btn-primary" [routerLink]="['/catalogo']">Volver</a>

@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { concatMap, delay } from 'rxjs/operators'
 
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
 import { EmpleadoLogin, Empleado, Mensaje, Tipo, MensajeLogin } from '../shared/app.model';
 import { DataService } from '../shared/data.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SessionService } from '../shared/session.service';
-import { PrecioServiceService } from '../shared/precio-service.service';
 import { RestCountriesService } from '../shared/rest-countries.service';
 import { FrankfurterService } from '../shared/frankfurter.service';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   empleadoLogin = this.empleadoLoginVacio as EmpleadoLogin;
 
   constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService,
-    private datos: DataService, private session: SessionService, private pres: PrecioServiceService, private restCS: RestCountriesService, private frankS: FrankfurterService) {
+    private datos: DataService, private session: SessionService, private restCS: RestCountriesService, private frankS: FrankfurterService) {
     this.mensaje = new Mensaje();
   }
 
@@ -38,6 +38,55 @@ export class LoginComponent implements OnInit {
     console.log("Valor actual del mensaje: " + this.mensaje.texto);
 
   }
+
+  /*
+  loginSubmit2() {
+    console.log("Enviando el formulario");
+    this.clienteApiRest.getLogin(this.empleadoLogin.nif, this.empleadoLogin.password).pipe(
+      concatMap(
+        resp => {
+          console.log("Respuesta correcta del servidor:" + resp.body);
+          this.datos.cambiarMensaje(new Mensaje(resp.body?.mensaje || "Inicio de sesion con exito", Tipo.SUCCESS, true));
+          return this.clienteApiRest.getEmpleado(this.empleadoLogin.nif)
+        }
+      ),
+      concatMap(
+        resp => {
+          let emp = new Empleado(resp.body?.nif, resp.body?.pais);
+          this.session.cambiarEmpleado(emp);
+          this.session.cambiarAutenticado(true);
+
+          return this.restCS.getCodeCoin(emp.pais)
+        }
+      ),
+      concatMap(
+        resp => {
+          let defaultCode: String = "EUR";
+          let code = defaultCode;
+          //Actualizo el codigo
+          if(resp.body!=null)
+            code = resp.body[0].currencies[0].code;
+          if (code != defaultCode)
+            return this.frankS.getFactor(code);
+          else {
+            this.session.cambiarFactor(1);
+            this.moveCatalogo();
+            return of(true)
+          }
+        }
+      ),
+      concatMap(
+        resp => {
+          if (code != defaultCode)
+            this.updateFactor(code);
+          else {
+            this.session.cambiarFactor(1);
+            this.moveCatalogo();
+          }
+        }
+      )
+    )
+}*/
 
   loginSubmit() {
     console.log("Enviando el formulario");
@@ -68,10 +117,6 @@ export class LoginComponent implements OnInit {
     );
   }
 
-  moveCatalogo() {
-    console.log("Redireccionando al catalogo...");
-    this.router.navigate(['catalogo']);
-  }
 
   copiaEmpleado(nif: String) {
     this.clienteApiRest.getEmpleado(nif).subscribe(
@@ -82,7 +127,7 @@ export class LoginComponent implements OnInit {
             emp = new Empleado(nif, resp.body.pais);
           this.session.cambiarEmpleado(emp);
           this.session.cambiarAutenticado(true);
-          this.updateCodeFactor(emp, this.moveCatalogo);
+          this.updateCodeFactor(emp);
         } else {
           // Aqui no modificamos el mensaje, si sucede esto es porque hay algun error en el cliente o en servidor, no porque esten mal los datos introducidos
           console.log("Error al obtener los datos del empleado, respuesta incorrecta: " + resp.status);
@@ -95,23 +140,20 @@ export class LoginComponent implements OnInit {
     )
   }
 
-  updateCodeFactor(emp: Empleado, func?: Function) {
+  updateCodeFactor(emp: Empleado) {
     // llamo rest-countries con emp.pais
     let defaultCode: String = "EUR";
     this.restCS.getCodeCoin(emp.pais).subscribe(
       resp => {
-        if (resp.status < 400) {
-          if (resp.body != null) {
-            //Actualizo el codigo
-            let code = resp.body[0].currencies[0].code;
-            if (code != defaultCode)
-              this.updateFactor(code);
-            else {
-              this.pres.cambiarFactor(1);
-              this.moveCatalogo();
-            }
-          } else
-            console.log("Error, Respuesta vacia");
+        if (resp.status < 400 && resp.body != null) {
+          //Actualizo el codigo
+          let code = resp.body[0].currencies[0].code;
+          if (code != defaultCode)
+            this.updateFactor(code);
+          else {
+            this.session.cambiarFactor(1);
+            this.moveCatalogo();
+          }
         } else {
           this.datos.cambiarMensaje(new Mensaje("Error al acceder a la api RestCountries, intentelo mas tarde", Tipo.ERROR, true));
         }
@@ -129,7 +171,7 @@ export class LoginComponent implements OnInit {
       resp => {
         if (resp.status < 400) {
           // cojo factor de conversion (division) de frankfurter
-          this.pres.cambiarFactor(resp.body.rates.EUR);
+          this.session.cambiarFactor(resp.body.rates.EUR);
           this.moveCatalogo();
         } else {
           this.datos.cambiarMensaje(new Mensaje('Error al acceder a los datos de conversion de monedas', Tipo.ERROR, true));
@@ -141,6 +183,11 @@ export class LoginComponent implements OnInit {
         throw err;
       }
     )
+  }
+
+  moveCatalogo() {
+    console.log("Redireccionando al catalogo...");
+    this.router.navigate(['catalogo']);
   }
 
 }

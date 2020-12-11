@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Configuracionpc, Empleado, Mensaje, Tipo } from '../shared/app.model';
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
 import { DataService } from '../shared/data.service';
-import { PrecioServiceService } from '../shared/precio-service.service';
 import { SessionService } from '../shared/session.service';
 
 @Component({
@@ -27,7 +26,7 @@ export class NuevaConfiguracionComponent implements OnInit {
   mensaje: Mensaje;
   factor: number;
   constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService,
-    private datos: DataService, private session: SessionService, private pres: PrecioServiceService) {
+    private datos: DataService, private session: SessionService) {
     this.empleado = new Empleado();
     this.mensaje = new Mensaje();
     this.factor = 1;
@@ -47,7 +46,7 @@ export class NuevaConfiguracionComponent implements OnInit {
           this.redirectLogin()
       }
     )
-    this.pres.factorObs.subscribe(
+    this.session.factorObs.subscribe(
       factor => {
         this.factor = factor;
       }
