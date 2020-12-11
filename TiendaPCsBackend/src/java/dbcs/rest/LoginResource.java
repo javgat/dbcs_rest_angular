@@ -79,7 +79,7 @@ public class LoginResource {
     }
     
     private boolean authenticate(Empleado emp, String password){
-        // Version basica, cambiarla en el futuro seguramente (cifrado)
+        
         return emp.getUsuario().getPassword().equals(password);
     }
     

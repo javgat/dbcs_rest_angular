@@ -93,6 +93,7 @@ export class LoginComponent implements OnInit {
     this.clienteApiRest.getLogin(this.empleadoLogin.nif, this.empleadoLogin.password).subscribe(
       resp => {
         if (resp.status < 400) {
+          this.clienteApiRest.cambiarAuthorization(this.empleadoLogin.nif as string, this.empleadoLogin.password as string)
           console.log("Respuesta correcta del servidor:" + resp.body);
           this.datos.cambiarMensaje(new Mensaje(resp.body?.mensaje || "Inicio de sesion con exito", Tipo.SUCCESS, true));
           // Aqui coger datos del empleado (pais)

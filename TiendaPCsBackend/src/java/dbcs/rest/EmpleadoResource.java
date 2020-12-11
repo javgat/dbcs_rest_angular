@@ -19,7 +19,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import java.util.Base64;
+import java.util.List;
 
 /**
  * REST Web Service
@@ -54,17 +57,35 @@ public class EmpleadoResource {
         throw new UnsupportedOperationException();
     }
     
+    private boolean isAuth(Empleado emp, String auth){
+        String decoded = new String(Base64.getDecoder().decode(auth.getBytes()));
+        String[] split = decoded.split(":");
+        String nif = split[0];
+        String pass = split[1];
+        if(!nif.equals(emp.getNifcif()))
+            return false;
+        if(!pass.equals(emp.getUsuario().getPassword()))
+            return false;
+        return true;
+    }
+    
     @GET
     @Path("{nif}")
     @Produces("application/json")
-    public Response getEmpleado(@PathParam("nif") String nif){// Habra que exigir autenticacion
+    public Response getEmpleado(@PathParam("nif") String nif, @Context HttpHeaders headers){// Habra que exigir autenticacion
         try{
+            
             Empleado emp = empleadoFacade.find(nif);
             if(emp==null){
                 return Response.status(Response.Status.NOT_FOUND)
                     .entity("{ \"message\": \""+EMP_NOT_FOUND+"\"}")
                     .build();
             }
+            List<String> heads = headers.getRequestHeader("Authorization");
+            if(heads==null || heads.isEmpty() || !isAuth(emp, heads.get(0)))
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity("{ \"message\": \""+EMP_AUTH+"\"}")
+                        .build();
             String pais = emp.getUsuario().getPais();
             return Response.status(Response.Status.OK)
                     .entity("{\"nif\" : \""+nif+"\","

@@ -86,7 +86,7 @@ export class ModificarConfiguracionComponent implements OnInit {
   }
 
   logout(){
-    this.session.logout(this.datos);
+    this.session.logout(this.datos, this.clienteApiRest);
   }
 
 }

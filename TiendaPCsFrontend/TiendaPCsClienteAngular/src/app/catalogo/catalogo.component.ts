@@ -63,7 +63,7 @@ export class CatalogoComponent implements OnInit {
   configsPrecio() {
     for (let conf of this.configs) {
       console.log("Precio antes: " + conf.precio);
-      conf.precio = conf.precio as number / this.factor;
+      conf.precio = parseFloat((conf.precio as number / this.factor).toFixed(2));
       console.log("Precio despues: " + conf.precio);
     }
   }
@@ -106,7 +106,7 @@ export class CatalogoComponent implements OnInit {
   }
 
   logout() {
-    this.session.logout(this.datos);
+    this.session.logout(this.datos, this.clienteApiRest);
   }
 
 

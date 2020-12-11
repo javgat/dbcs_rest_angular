@@ -44,6 +44,8 @@ public class ConfiguracionpcFacade extends AbstractFacade<Configuracionpc> imple
     public Boolean editConfiguracion(int idConfiguracion, int velCPU, int capRAM,
             int capDD, int velTarGraf, int memTarGraf, String tipoCPU, float precio) {
         Configuracionpc conf = find(idConfiguracion);
+        if(velCPU<0 || capRAM<0 || capDD<0 || velTarGraf<0 || memTarGraf < 0 || precio <0)
+            return false;
         //se comprueba que la configuracion asociada al identificador dado existe
         if(conf!=null){
             //si el valor es 0 no se modifica en la base de datos
@@ -98,6 +100,9 @@ public class ConfiguracionpcFacade extends AbstractFacade<Configuracionpc> imple
         conf.setTipocpu(tipoCPU);
         conf.setPrecio(precio);
 
+        if(velCPU<0 || capRAM<0 || capDD<0 || velTarGraf<0 || memTarGraf < 0 ||
+                tipoCPU==null || tipoCPU.equals("") || precio <0)
+            return false;
         try{
             create(conf);
         }catch(Exception e){

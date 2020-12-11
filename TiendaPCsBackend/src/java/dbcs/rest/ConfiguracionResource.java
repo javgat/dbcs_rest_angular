@@ -6,7 +6,11 @@
 package dbcs.rest;
 
 import dbcs.dominio.Configuracionpc;
+import dbcs.dominio.Empleado;
 import dbcs.persistencia.ConfiguracionpcFacadeLocal;
+import dbcs.persistencia.EmpleadoFacadeLocal;
+import java.util.Base64;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
@@ -24,6 +28,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
+import javax.ws.rs.core.HttpHeaders;
 
 /**
  * REST Web Service
@@ -32,6 +37,7 @@ import javax.ws.rs.POST;
  */
 @Path("/configuracion")
 public class ConfiguracionResource {
+    EmpleadoFacadeLocal empleadoFacade = lookupEmpleadoFacadeLocal();
     ConfiguracionpcFacadeLocal confF = lookupConfiguracionpcFacadeLocal();
 
     @Context
@@ -45,12 +51,29 @@ public class ConfiguracionResource {
     private static final String CONF_ADD_OK="Configuracion introducida correctamente";
     private static final String CONF_ADD_FAIL="Configuracion no se pudo introducir";
     private static final String CONF_EDIT_OK="Configuracion editada con exito";
-    private static final String CONF_EDIT_NOT_FOUND="La configuracion que intentas editar no existe";
+    private static final String CONF_EDIT_NOT_FOUND="La configuracion que intentas editar no existe, o los parametros introducidos no son validos";
+    private static final String ERR_AUTH="No tiene permisos para realizar esa operacion";
     
     /**
      * Creates a new instance of ConfiguracionResource
      */
     public ConfiguracionResource() {
+    }
+    
+    private boolean isAuth(HttpHeaders headers){
+        List<String> heads = headers.getRequestHeader("Authorization");
+        if(heads==null || heads.isEmpty())
+            return false;
+        String decoded = new String(Base64.getDecoder().decode(heads.get(0).getBytes()));
+        String[] split = decoded.split(":");
+        String nif = split[0];
+        String pass = split[1];
+        Empleado emp = empleadoFacade.find(nif);
+        if(emp==null)
+            return false;
+        if(!emp.getUsuario().getPassword().equals(pass))
+            return false;
+        return true;
     }
 
     /**
@@ -59,8 +82,12 @@ public class ConfiguracionResource {
      */
     @GET
     @Produces("application/json")
-    public Response getCatalogo() {
+    public Response getCatalogo(@Context HttpHeaders headers) {
         try{
+            if(!isAuth(headers))
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity(getMessage(ERR_AUTH))
+                        .build();
             return Response.status(Response.Status.OK)
                     .entity(confF.findAll().toArray(new Configuracionpc[0]))
                     .build();
@@ -79,8 +106,12 @@ public class ConfiguracionResource {
     @DELETE
     @Path("{idconfig}")
     @Produces("application/json")
-    public Response deleteConfig(@PathParam("idconfig") Integer idConf){
+    public Response deleteConfig(@PathParam("idconfig") Integer idConf, @Context HttpHeaders headers){
         try{
+            if(!isAuth(headers))
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity(getMessage(ERR_AUTH))
+                        .build();
             if(confF.removeConfig(idConf))
                 return Response
                         .status(Response.Status.OK)
@@ -102,8 +133,12 @@ public class ConfiguracionResource {
     
     @POST
     @Produces("application/json")
-    public Response postConfig(JsonObject conf){
+    public Response postConfig(JsonObject conf, @Context HttpHeaders headers){
         try{
+            if(!isAuth(headers))
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity(getMessage(ERR_AUTH))
+                        .build();
             if(!(conf.containsKey("velocidadcpu") && conf.containsKey("capacidadram") &&
                     conf.containsKey("capacidaddd") && conf.containsKey("velocidadtarjetagrafica") &&
                     conf.containsKey("memoriatarjetagrafica") && conf.containsKey("tipocpu"))){
@@ -150,8 +185,12 @@ public class ConfiguracionResource {
     @PUT
     @Path("{idConfig}")
     @Consumes("application/json")
-    public Response modificarConfiguracion(@PathParam("idConfig") Integer idConf, JsonObject conf) {
+    public Response modificarConfiguracion(@PathParam("idConfig") Integer idConf, JsonObject conf, @Context HttpHeaders headers) {
         try{
+            if(!isAuth(headers))
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity(getMessage(ERR_AUTH))
+                        .build();
             int idConfiguracion = idConf;
             try{
                 int velCPU = getIntDefault("velocidadcpu", conf);
@@ -166,7 +205,7 @@ public class ConfiguracionResource {
                             .entity(getMessage(CONF_EDIT_OK))
                             .build();
                 else
-                    return Response.status(Response.Status.NOT_FOUND)
+                    return Response.status(Response.Status.FORBIDDEN)
                             .entity(getMessage(CONF_EDIT_NOT_FOUND))
                             .build();
             }catch(ClassCastException cce){
@@ -191,6 +230,16 @@ public class ConfiguracionResource {
         try {
             javax.naming.Context c = new InitialContext();
             return (ConfiguracionpcFacadeLocal) c.lookup("java:global/TiendaPCsBackend/ConfiguracionpcFacade!dbcs.persistencia.ConfiguracionpcFacadeLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
+
+    private EmpleadoFacadeLocal lookupEmpleadoFacadeLocal() {
+        try {
+            javax.naming.Context c = new InitialContext();
+            return (EmpleadoFacadeLocal) c.lookup("java:global/TiendaPCsBackend/EmpleadoFacade!dbcs.persistencia.EmpleadoFacadeLocal");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);
