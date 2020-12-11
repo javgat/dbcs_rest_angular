@@ -58,6 +58,7 @@ export class SessionService {
   logout(datos: DataService, clienteApiRest : ClienteApiRestService) {
     this.deauthenticate();
     this.factor.next(1);
+    this.code.next("EUR");
     clienteApiRest.vaciarPassword();
     datos.cambiarMensaje(new Mensaje("Sesion cerrada con exito", Tipo.INFO, true));
   }

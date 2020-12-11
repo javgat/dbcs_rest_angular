@@ -25,11 +25,13 @@ export class NuevaConfiguracionComponent implements OnInit {
   empleado: Empleado;
   mensaje: Mensaje;
   factor: number;
+  code: string;
   constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService,
     private datos: DataService, private session: SessionService) {
     this.empleado = new Empleado();
     this.mensaje = new Mensaje();
     this.factor = 1;
+    this.code = "EUR";
   }
 
   ngOnInit(): void {
@@ -49,6 +51,11 @@ export class NuevaConfiguracionComponent implements OnInit {
     this.session.factorObs.subscribe(
       factor => {
         this.factor = factor;
+      }
+    )
+    this.session.codeObs.subscribe(
+      code => {
+        this.code = code;
       }
     )
   }

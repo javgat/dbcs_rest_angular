@@ -1,5 +1,5 @@
 <div class="alert alert-{{mensaje.type}}" *ngIf="mensaje.mostrar">{{mensaje.texto}}</div> 
-<a class="btn btn-primary" (click)="logout()">Cerrar sesión</a>
+<!--<a class="btn btn-primary" (click)="logout()">Cerrar sesión</a>-->
 <form (ngSubmit)='onSubmit()' ngNativeValidate>
     <div class="form-group">
         <p>Tipo CPU</p>
@@ -34,9 +34,11 @@
             [(ngModel)]="configuracion.memoriatarjetagrafica">
     </div>
     <div class="form-group">
-        <label for="inputprecio">Precio</label>
+        <label for="inputprecio">Precio ({{code}})</label>
         <input type="number" step="0.01" min="0" max="99999" class="form-control" required name="inputprecio" [(ngModel)]="configuracion.precio">
     </div>
-    <a class="btn btn-primary" [routerLink]="['/catalogo']">Volver</a>
-    <input type="submit" class="btn btn-primary" value="Guardar configuracion">
+    <div class="row">
+    <div class="col"><a class="btn btn-info btn-block" [routerLink]="['/catalogo']">Volver</a></div>
+    <div class="col"><input type="submit" class="btn btn-primary btn-block" value="Guardar configuracion"></div>
+    </div>
 </form>
