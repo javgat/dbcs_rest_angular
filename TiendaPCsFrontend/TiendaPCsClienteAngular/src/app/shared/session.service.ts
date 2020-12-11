@@ -20,8 +20,14 @@ export class SessionService {
   private factor = new BehaviorSubject<number>(1);
   factorObs = this.factor.asObservable();
 
+  private code = new BehaviorSubject("EUR");
+  codeObs = this.code.asObservable();
+
   constructor() { }
 
+  cambiarCode(code: string){
+    this.code.next(code);
+  }
 
   cambiarEmpleado(emp: Empleado) {
     this.empleado.next(emp);

@@ -1,43 +1,46 @@
-<h3>Catalogo</h3>
-<div class="alert alert-{{mensaje.type}}" *ngIf="mensaje.mostrar">{{mensaje.texto}}</div> 
 <div class="container">
+    <div class="alert alert-{{mensaje.type}}" *ngIf="mensaje.mostrar">{{mensaje.texto}}</div>
     <div class="row">
-        <div class="col-sm-12">
-            <form class="form-inline">
-                <fieldset class="form-group col-sm-12"></fieldset>
-                <fieldset class="form-group col-sm-1">
-                    <a class="btn btn-primary" [routerLink]="['/catalogo/nuevo']">Nuevo</a>
-                    <a class="btn btn-primary" (click)="logout()">Cerrar sesión</a>
-                </fieldset>
-            </form>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Tipo CPU</th>
-                        <th>Velocidad CPU</th>
-                        <th>Memoria RAM</th>
-                        <th>Almacenamiento DD</th>
-                        <th>Velocidad T.Grafica</th>
-                        <th>Memoria T.Grafica</th>
-                        <th>Precio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let conf of configs">
-                        <td><i>{{conf.idconfiguracion}}</i></td>
-                        <td><i>{{conf.tipocpu}}</i></td>
-                        <td><i>{{conf.velocidadcpu}}</i></td>
-                        <td><i>{{conf.capacidadram}}</i></td>
-                        <td><i>{{conf.capacidaddd}}</i></td>
-                        <td><i>{{conf.velocidadtarjetagrafica}}</i></td>
-                        <td><i>{{conf.memoriatarjetagrafica}}</i></td>
-                        <td><i>{{conf.precio}}</i></td>
-                        <td><a class="btn btn-info" [routerLink]="['/catalogo',conf.idconfiguracion,'modificar']">Modificar</a></td>
-                        <td><a class="btn btn-danger" (click)="borrar(conf.idconfiguracion)">Borrar</a></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="col">
+            Empleado: {{empleado.nif}}
         </div>
+        <div class="col text-right">
+            <a class="btn btn-secondary" (click)="logout()">Cerrar sesión</a>
+        </div>
+    </div>
+    <div>
+        <h3 class="text-center mt-3">Catalogo</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Tipo CPU</th>
+                    <th>Velocidad CPU</th>
+                    <th>Memoria RAM</th>
+                    <th>Alm. DD</th>
+                    <th>Velocidad T.Grafica</th>
+                    <th>Memoria T.Grafica</th>
+                    <th>Precio ({{code}})</th>
+                    <th></th>
+                    <th><a class="btn btn-primary" [routerLink]="['/catalogo/nuevo']">Nuevo</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let conf of configs">
+                    <td><i>{{conf.idconfiguracion}}</i></td>
+                    <td><i>{{conf.tipocpu}}</i></td>
+                    <td><i>{{conf.velocidadcpu}}</i></td>
+                    <td><i>{{conf.capacidadram}}</i></td>
+                    <td><i>{{conf.capacidaddd}}</i></td>
+                    <td><i>{{conf.velocidadtarjetagrafica}}</i></td>
+                    <td><i>{{conf.memoriatarjetagrafica}}</i></td>
+                    <td><i>{{conf.precio}}</i></td>
+                    <td><a class="btn btn-info"
+                            [routerLink]="['/catalogo',conf.idconfiguracion,'modificar']">Modificar</a>
+                    </td>
+                    <td><a class="btn btn-danger" (click)="borrar(conf.idconfiguracion)">Borrar</a></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>

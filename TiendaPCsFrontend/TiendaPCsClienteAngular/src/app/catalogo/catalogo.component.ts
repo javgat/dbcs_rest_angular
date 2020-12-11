@@ -22,6 +22,7 @@ export class CatalogoComponent implements OnInit {
   mensaje: Mensaje;
   empleado: Empleado;
   factor: number;
+  code: string;
 
   constructor(private ruta: ActivatedRoute, private router: Router, private clienteApiRest: ClienteApiRestService, private restCS: RestCountriesService,
     private frankS: FrankfurterService, private datos: DataService, private session: SessionService) {
@@ -29,6 +30,7 @@ export class CatalogoComponent implements OnInit {
     this.mensaje = new Mensaje();
     this.factor = 1;
     this.empleado = new Empleado();
+    this.code = "EUR";
   }
 
   ngOnInit() {
@@ -42,6 +44,11 @@ export class CatalogoComponent implements OnInit {
     this.session.factorObs.subscribe(
       factor => {
         this.factor = factor
+      }
+    )
+    this.session.codeObs.subscribe(
+      code => {
+        this.code = code
       }
     )
     this.session.autenticadoObs.subscribe(

@@ -149,6 +149,7 @@ export class LoginComponent implements OnInit {
         if (resp.status < 400 && resp.body != null) {
           //Actualizo el codigo
           let code = resp.body[0].currencies[0].code;
+          this.session.cambiarCode(code as string);
           if (code != defaultCode)
             this.updateFactor(code);
           else {
