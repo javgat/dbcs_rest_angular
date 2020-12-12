@@ -7,6 +7,7 @@ package dbcs.rest;
 
 import dbcs.dominio.Empleado;
 import dbcs.persistencia.EmpleadoFacadeLocal;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
@@ -54,7 +55,8 @@ public class LoginResource {
     @Produces("application/json")
     public Response getLogin(@PathParam("nif") String nif, @Context HttpHeaders headers) {
         try{
-            String password = headers.getRequestHeader("Authorization").get(0);
+            String pass_encoded = headers.getRequestHeader("Authorization").get(0);
+            String password = new String(Base64.getDecoder().decode(pass_encoded.getBytes()));
             System.out.println("Usuario: "+nif+", Password:"+password);
             Empleado emp = empF.find(nif);
             if(emp == null){

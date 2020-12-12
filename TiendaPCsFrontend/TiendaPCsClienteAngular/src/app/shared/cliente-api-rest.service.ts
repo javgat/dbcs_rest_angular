@@ -6,8 +6,6 @@ import { Config } from 'protractor';
 @Injectable({ providedIn: 'root' })
 export class ClienteApiRestService {
 
-
-  
   private headersEmpty = new HttpHeaders({
     'Content-Type': 'application/json',
     Authorization: ''
@@ -34,11 +32,11 @@ export class ClienteApiRestService {
 
   getLogin(id: String, pass: String): Observable<HttpResponse<MensajeLogin>> {
     let url = ClienteApiRestService.BASE_URI + '/login/' + id;    
-    
+    let encode = btoa(pass as string);
     return this.http.get<MensajeLogin>(url, {observe: 'response',
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-         Authorization: pass as string
+         Authorization: encode
       })});
   }
 

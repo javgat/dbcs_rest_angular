@@ -68,9 +68,9 @@ export class CatalogoComponent implements OnInit {
 
   configsPrecio() {
     for (let conf of this.configs) {
-      console.log("Precio antes: " + conf.precio);
+      //console.log("Precio antes: " + conf.precio);
       conf.precio = parseFloat((conf.precio as number / this.factor).toFixed(2));
-      console.log("Precio despues: " + conf.precio);
+      //console.log("Precio despues: " + conf.precio);
     }
   }
 
