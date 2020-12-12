@@ -49,23 +49,11 @@ public class EmpleadoResource implements ContainerResponseFilter{
     public EmpleadoResource() {
     }
 
-    
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext response) {
         response.getHeaders().putSingle("Access-Control-Allow-Origin", "*");
         response.getHeaders().putSingle("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE");
         response.getHeaders().putSingle("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    }
-    
-    /**
-     * Retrieves representation of an instance of dbcs.rest.EmpleadoResource
-     * @return an instance of java.lang.String
-     */
-    @GET
-    @Produces("application/json")  // IMPlementar otras operaciones REST que no utilizamos? (Get de todo, etc)
-    public String getJson() {
-        //TODO return proper representation object
-        throw new UnsupportedOperationException();
     }
     
     private boolean isAuth(Empleado emp, String auth){
@@ -108,16 +96,6 @@ public class EmpleadoResource implements ContainerResponseFilter{
                 .entity("{ \"message\": \""+EMP_ERROR+"\"}")
                 .build();
         }
-    }
-
-    /**
-     * PUT method for updating or creating an instance of EmpleadoResource
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
-     */
-    @PUT
-    @Consumes("application/json")
-    public void putJson(String content) {
     }
 
     private EmpleadoFacadeLocal lookupEmpleadoFacadeLocal() {
