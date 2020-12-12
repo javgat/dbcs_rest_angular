@@ -33,15 +33,6 @@ export class LoginComponent implements OnInit {
     this.datos.mensajeActual.subscribe(
       valor => this.mensaje = valor
     )
-    console.log("Valor actual del mensaje: " + this.mensaje.texto);
-    this.frankS.getFactor("USD").subscribe(
-      resp => {
-        console.log("Funca");
-      },
-      err => {
-        console.log(err);
-      }
-    )
   }
 
   loginSubmit() {
@@ -138,7 +129,6 @@ export class LoginComponent implements OnInit {
         }
       },
       err => {
-        console.log("o");
         this.datos.cambiarMensaje(new Mensaje("Error al acceder a la api Frankfurter, intentelo mas tarde", Tipo.ERROR, true));
         console.log("Error al acceder a Frankfurter Service: " + err.message);
         throw err;
