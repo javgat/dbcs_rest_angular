@@ -10,7 +10,7 @@ export class FrankfurterService {
 
   getFactor(from: String) : Observable<HttpResponse<any>>{
     let url = FrankfurterService.BASE_URI + '/2020-01-01?from='+from+'&to=EUR';
-    url = "https://api.frankfurter.app/2020-01-01?from=USD&to=EUR";
+    console.log("url es: "+url);
     return this.http.get<any>(url, {observe: 'response'});
   }
 }

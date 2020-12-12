@@ -20,6 +20,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
@@ -29,7 +32,7 @@ import javax.ws.rs.core.Response;
  * @author Javier
  */
 @Path("/login")
-public class LoginResource {
+public class LoginResource implements ContainerResponseFilter{
     EmpleadoFacadeLocal empF = lookupEmpleadoFacadeLocal();
 
     @Context
@@ -44,6 +47,13 @@ public class LoginResource {
      * Creates a new instance of LoginResource
      */
     public LoginResource() {
+    }
+    
+    @Override
+    public void filter(ContainerRequestContext requestContext, ContainerResponseContext response) {
+        response.getHeaders().putSingle("Access-Control-Allow-Origin", "*");
+        response.getHeaders().putSingle("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE");
+        response.getHeaders().putSingle("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }
 
     /**

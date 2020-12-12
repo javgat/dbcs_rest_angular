@@ -28,6 +28,9 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
 
 /**
@@ -36,7 +39,7 @@ import javax.ws.rs.core.HttpHeaders;
  * @author Javier
  */
 @Path("/configuracion")
-public class ConfiguracionResource {
+public class ConfiguracionResource implements ContainerResponseFilter {
     EmpleadoFacadeLocal empleadoFacade = lookupEmpleadoFacadeLocal();
     ConfiguracionpcFacadeLocal confF = lookupConfiguracionpcFacadeLocal();
 
@@ -58,6 +61,13 @@ public class ConfiguracionResource {
      * Creates a new instance of ConfiguracionResource
      */
     public ConfiguracionResource() {
+    }
+    
+    @Override
+    public void filter(ContainerRequestContext requestContext, ContainerResponseContext response) {
+        response.getHeaders().putSingle("Access-Control-Allow-Origin", "*");
+        response.getHeaders().putSingle("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE");
+        response.getHeaders().putSingle("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }
     
     private boolean isAuth(HttpHeaders headers){

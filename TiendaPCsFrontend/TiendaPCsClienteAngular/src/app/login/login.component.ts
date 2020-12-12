@@ -34,7 +34,14 @@ export class LoginComponent implements OnInit {
       valor => this.mensaje = valor
     )
     console.log("Valor actual del mensaje: " + this.mensaje.texto);
-
+    this.frankS.getFactor("USD").subscribe(
+      resp => {
+        console.log("Funca");
+      },
+      err => {
+        console.log(err);
+      }
+    )
   }
 
   loginSubmit() {
@@ -43,7 +50,7 @@ export class LoginComponent implements OnInit {
       resp => {
         if (resp.status < 400) {
           this.clienteApiRest.cambiarAuthorization(this.empleadoLogin.nif as string, this.empleadoLogin.password as string)
-          console.log("Respuesta correcta del servidor:" + resp.body);
+          console.log("Respuesta correcta del servidor, login");
           this.datos.cambiarMensaje(new Mensaje(resp.body?.mensaje || "Inicio de sesion con exito", Tipo.SUCCESS, true));
           // Aqui coger datos del empleado (pais)
           this.copiaEmpleado(this.empleadoLogin.nif);
@@ -99,6 +106,7 @@ export class LoginComponent implements OnInit {
           //Actualizo el codigo
           let code = resp.body[0].currencies[0].code;
           this.session.cambiarCode(code as string);
+          console.log(code)
           if (code != defaultCode)
             this.updateFactor(code);
           else {
@@ -120,6 +128,7 @@ export class LoginComponent implements OnInit {
   private updateFactor(code: String) {
     this.frankS.getFactor(code).subscribe(
       resp => {
+        console.log("e");
         if (resp.status < 400) {
           // cojo factor de conversion (division) de frankfurter
           this.session.cambiarFactor(resp.body.rates.EUR);
@@ -129,6 +138,7 @@ export class LoginComponent implements OnInit {
         }
       },
       err => {
+        console.log("o");
         this.datos.cambiarMensaje(new Mensaje("Error al acceder a la api Frankfurter, intentelo mas tarde", Tipo.ERROR, true));
         console.log("Error al acceder a Frankfurter Service: " + err.message);
         throw err;

@@ -23,6 +23,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.util.Base64;
 import java.util.List;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 
 /**
  * REST Web Service
@@ -30,7 +33,7 @@ import java.util.List;
  * @author Javier
  */
 @Path("/empleado")
-public class EmpleadoResource {
+public class EmpleadoResource implements ContainerResponseFilter{
     EmpleadoFacadeLocal empleadoFacade = lookupEmpleadoFacadeLocal();
 
     @Context
@@ -46,6 +49,14 @@ public class EmpleadoResource {
     public EmpleadoResource() {
     }
 
+    
+    @Override
+    public void filter(ContainerRequestContext requestContext, ContainerResponseContext response) {
+        response.getHeaders().putSingle("Access-Control-Allow-Origin", "*");
+        response.getHeaders().putSingle("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE");
+        response.getHeaders().putSingle("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    }
+    
     /**
      * Retrieves representation of an instance of dbcs.rest.EmpleadoResource
      * @return an instance of java.lang.String
