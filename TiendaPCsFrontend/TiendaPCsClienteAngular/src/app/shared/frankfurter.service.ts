@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 export class FrankfurterService {
   
   private static readonly BASE_URI = 'https://api.frankfurter.app';
-  constructor(private http: HttpClient) { } // inyectamos el modulo HttpClientModule
+  constructor(private http: HttpClient) { }
 
   getFactor(from: String) : Observable<HttpResponse<any>>{
     let url = FrankfurterService.BASE_URI + '/2020-01-01?from='+from+'&to=EUR';

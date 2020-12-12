@@ -8,12 +8,11 @@ import { Empleado, Mensaje, Tipo } from './app.model'
 })
 export class DataService {
   // Usamos mensajes para mostrar el resultado de la operacion
-  private mensaje = new BehaviorSubject<Mensaje>(new Mensaje()); // hay que inicializarlo
-  mensajeActual = this.mensaje.asObservable(); // Lo exponemos como un observable
+  private mensaje = new BehaviorSubject<Mensaje>(new Mensaje());
+  mensajeActual = this.mensaje.asObservable();
 
   constructor() { }
 
-  // Para actualizar mensaje
   cambiarMensaje(mensaje: Mensaje){
     this.mensaje.next(mensaje);
   }

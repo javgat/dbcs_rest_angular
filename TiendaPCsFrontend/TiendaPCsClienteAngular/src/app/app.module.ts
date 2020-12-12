@@ -12,6 +12,9 @@ import { DataService } from './shared/data.service';
 import { CatalogoComponent } from './catalogo/catalogo.component';
 import { NuevaConfiguracionComponent } from './nueva-configuracion/nueva-configuracion.component';
 import { ModificarConfiguracionComponent } from './modificar-configuracion/modificar-configuracion.component';
+import { SessionService } from './shared/session.service';
+import { FrankfurterService } from './shared/frankfurter.service';
+import { RestCountriesService } from './shared/rest-countries.service';
 
 
 @NgModule({
@@ -30,7 +33,10 @@ import { ModificarConfiguracionComponent } from './modificar-configuracion/modif
   ],
   providers: [
     ClienteApiRestService,
-    DataService
+    DataService,
+    SessionService,
+    FrankfurterService,
+    RestCountriesService
     ],
   bootstrap: [AppComponent]
 })

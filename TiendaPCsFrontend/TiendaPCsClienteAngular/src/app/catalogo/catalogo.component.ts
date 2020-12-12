@@ -7,7 +7,6 @@ import { RestCountriesService } from '../shared/rest-countries.service'
 import { FrankfurterService } from '../shared/frankfurter.service'
 import { DataService } from '../shared/data.service';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { Session } from 'protractor';
 import { SessionService } from '../shared/session.service';
 import { HttpResponse } from '@angular/common/http';
 

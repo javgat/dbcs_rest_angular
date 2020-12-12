@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 export class RestCountriesService {
 
   private static readonly BASE_URI = 'https://restcountries.eu/rest/v2';
-  constructor(private http: HttpClient) { } // inyectamos el modulo HttpClientModule
+  constructor(private http: HttpClient) { }
 
   getCodeCoin(pais: String) : Observable<HttpResponse<ArrayCurrency[]>>{
     let url = RestCountriesService.BASE_URI + '/name/'+pais+'?fields=currencies';

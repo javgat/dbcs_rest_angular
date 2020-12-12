@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { concatMap, delay } from 'rxjs/operators'
 
 import { ClienteApiRestService } from '../shared/cliente-api-rest.service';
 import { EmpleadoLogin, Empleado, Mensaje, Tipo, MensajeLogin } from '../shared/app.model';
@@ -9,7 +8,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { SessionService } from '../shared/session.service';
 import { RestCountriesService } from '../shared/rest-countries.service';
 import { FrankfurterService } from '../shared/frankfurter.service';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -38,55 +36,6 @@ export class LoginComponent implements OnInit {
     console.log("Valor actual del mensaje: " + this.mensaje.texto);
 
   }
-
-  /*
-  loginSubmit2() {
-    console.log("Enviando el formulario");
-    this.clienteApiRest.getLogin(this.empleadoLogin.nif, this.empleadoLogin.password).pipe(
-      concatMap(
-        resp => {
-          console.log("Respuesta correcta del servidor:" + resp.body);
-          this.datos.cambiarMensaje(new Mensaje(resp.body?.mensaje || "Inicio de sesion con exito", Tipo.SUCCESS, true));
-          return this.clienteApiRest.getEmpleado(this.empleadoLogin.nif)
-        }
-      ),
-      concatMap(
-        resp => {
-          let emp = new Empleado(resp.body?.nif, resp.body?.pais);
-          this.session.cambiarEmpleado(emp);
-          this.session.cambiarAutenticado(true);
-
-          return this.restCS.getCodeCoin(emp.pais)
-        }
-      ),
-      concatMap(
-        resp => {
-          let defaultCode: String = "EUR";
-          let code = defaultCode;
-          //Actualizo el codigo
-          if(resp.body!=null)
-            code = resp.body[0].currencies[0].code;
-          if (code != defaultCode)
-            return this.frankS.getFactor(code);
-          else {
-            this.session.cambiarFactor(1);
-            this.moveCatalogo();
-            return of(true)
-          }
-        }
-      ),
-      concatMap(
-        resp => {
-          if (code != defaultCode)
-            this.updateFactor(code);
-          else {
-            this.session.cambiarFactor(1);
-            this.moveCatalogo();
-          }
-        }
-      )
-    )
-}*/
 
   loginSubmit() {
     console.log("Enviando el formulario");

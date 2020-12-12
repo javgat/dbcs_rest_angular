@@ -30,11 +30,10 @@ export class ClienteApiRestService {
   }
 
   private static readonly BASE_URI = 'http://localhost:8080/TiendaPCsBackend/webresources';
-  constructor(private http: HttpClient) { } // inyectamos el modulo HttpClientModule
+  constructor(private http: HttpClient) { }
 
   getLogin(id: String, pass: String): Observable<HttpResponse<MensajeLogin>> {
-    let url = ClienteApiRestService.BASE_URI + '/login/' + id;
-    // No me deja usar el options declarado antes
+    let url = ClienteApiRestService.BASE_URI + '/login/' + id;    
     
     return this.http.get<MensajeLogin>(url, {observe: 'response',
       headers: new HttpHeaders({

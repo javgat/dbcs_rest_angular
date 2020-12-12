@@ -50,7 +50,6 @@ export class ModificarConfiguracionComponent implements OnInit {
         let id = params.get('id');
         if(id == null){
           this.configuracion.idconfiguracion = 0;
-          //Comprobar no solo si es un numero, si no si existe en BD, y si no existe redireccionar a catalogo con mensaje de error
         }else
           this.configuracion.idconfiguracion = Number(id);
       },
@@ -82,7 +81,6 @@ export class ModificarConfiguracionComponent implements OnInit {
         throw err;
       }
     );
-    //igual redireccione si o si?
   }
 
   logout(){
