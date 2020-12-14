@@ -87,8 +87,19 @@ public class ConfiguracionpcFacade extends AbstractFacade<Configuracionpc> imple
         return id;
     }
     
+    /**
+     * 
+     * @param velCPU
+     * @param capRAM
+     * @param capDD
+     * @param velTarGraf
+     * @param memTarGraf
+     * @param tipoCPU
+     * @param precio
+     * @return El idConfiguracion asociado, o -1 en caso de no poder realizarlo
+     */
     @Override
-    public Boolean addConfiguracion(int velCPU, int capRAM, int capDD, int velTarGraf,
+    public int addConfiguracion(int velCPU, int capRAM, int capDD, int velTarGraf,
             int memTarGraf, String tipoCPU, float precio) {
         Integer idConfig = newIdConfig();
         Configuracionpc conf = new Configuracionpc(idConfig);
@@ -102,12 +113,12 @@ public class ConfiguracionpcFacade extends AbstractFacade<Configuracionpc> imple
 
         if(velCPU<0 || capRAM<0 || capDD<0 || velTarGraf<0 || memTarGraf < 0 ||
                 tipoCPU==null || tipoCPU.equals("") || precio <0)
-            return false;
+            return -1;
         try{
             create(conf);
         }catch(Exception e){
-            return false;
+            return -1;
         }
-        return true;
+        return idConfig;
     }
 }
