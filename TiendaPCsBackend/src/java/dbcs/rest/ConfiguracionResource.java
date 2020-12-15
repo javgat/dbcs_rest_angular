@@ -47,13 +47,10 @@ public class ConfiguracionResource implements ContainerResponseFilter {
     private UriInfo context;
     
     private static final String SERV_ERR="Error en el sistema al acceder a la configuracion";
-    //private static final String CONF_BORR_OK="Configuracion borrada con exito";
     private static final String CONF_BORR_ERROR="Error al intentar borrar la configuracion seleccionada";
     private static final String CONF_ADD_MISSING="Faltan datos o los nombres de los parametros no son correctos";
     private static final String CONF_ADD_WRONG="Los tipos de datos pasados son incorrectos";
-    //private static final String CONF_ADD_OK="Configuracion introducida correctamente";
     private static final String CONF_ADD_FAIL="Configuracion no se pudo introducir";
-    //private static final String CONF_EDIT_OK="Configuracion editada con exito";
     private static final String CONF_EDIT_NOT_FOUND="La configuracion que intentas editar no existe, o los parametros introducidos no son validos";
     private static final String ERR_AUTH="No tiene permisos para realizar esa operacion";
     
@@ -70,6 +67,9 @@ public class ConfiguracionResource implements ContainerResponseFilter {
         response.getHeaders().putSingle("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }
     
+    /*
+    Devuelve true si la cabecera de autorizacion es valida, false si no
+    */
     private boolean isAuth(HttpHeaders headers){
         List<String> heads = headers.getRequestHeader("Authorization");
         if(heads==null || heads.isEmpty())
@@ -125,7 +125,6 @@ public class ConfiguracionResource implements ContainerResponseFilter {
             if(confF.removeConfig(idConf))
                 return Response
                         .status(Response.Status.OK)
-                        //.entity(getMessage(CONF_BORR_OK))
                         .build();
             else
                 return Response
@@ -168,12 +167,11 @@ public class ConfiguracionResource implements ContainerResponseFilter {
                 String id = Integer.toString(idConfig);
                 if(idConfig!=-1)
                     return Response.status(Response.Status.CREATED)
-                            //.entity(getMessage(CONF_ADD_OK))
                             .entity("{\"Location\" : \"/configuracion/"+id+"\"}")
                             .build();
                 else
                     return Response.status(Response.Status.BAD_REQUEST)
-                            .entity(getMessage(CONF_ADD_FAIL))//?? no deberia suceder este creo, que escriba en log?
+                            .entity(getMessage(CONF_ADD_FAIL))
                             .build();
             }catch(ClassCastException cce){
                 Logger.getLogger(getClass().getName()).log(Level.WARNING, "exception caught", cce);
@@ -215,7 +213,6 @@ public class ConfiguracionResource implements ContainerResponseFilter {
                 float precio = conf.containsKey("precio") ? (float)conf.getJsonNumber("precio").doubleValue() : 0f;
                 if(confF.editConfiguracion(idConfiguracion, velCPU, capRAM, capDD, velTarGraf, memTarGraf, tipoCPU, precio))
                     return Response.status(Response.Status.OK)
-                            //.entity(getMessage(CONF_EDIT_OK))
                             .build();
                 else
                     return Response.status(Response.Status.FORBIDDEN)
