@@ -1,14 +1,13 @@
-<p *ngIf="mostrarMensaje">{{mensaje}}</p> 
-<form (ngSubmit)='loginSubmit()'>
+<div class="alert alert-{{mensaje.type}}" *ngIf="mensaje.mostrar">{{mensaje.texto}}</div> 
+<form (ngSubmit)='loginSubmit()' ngNativeValidate>
     <div class="form-group">
-        <label for="inputNif">Username</label>
-        <input type="text" class="form-control" required name="inputUsername" aria-describedby="usernameHelp" [(ngModel)]="usuario.nif">
-        <small id="usernameHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        <label for="inputNif">Nifcif</label>
+        <input type="text" class="form-control" name="inputUsername" aria-describedby="usernameHelp" [(ngModel)]="empleadoLogin.nif" required/>
+        <small id="usernameHelp" class="form-text text-muted">El nif o cif asociado a tu cuenta de empleado</small>
     </div>
     <div class="form-group">
         <label for="inputPassword">Password</label>
-        <input type="password" class="form-control" required name="inputPassword" [(ngModel)]="usuario.password">
+        <input type="password" class="form-control" name="inputPassword" [(ngModel)]="empleadoLogin.password" required/>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-    <!--((document.getElementById('inputUsername') as HTMLInputElement).value)-->
+    <input type="submit" value="Acceder" class="btn btn-primary btn-lg btn-block"/>
 </form>

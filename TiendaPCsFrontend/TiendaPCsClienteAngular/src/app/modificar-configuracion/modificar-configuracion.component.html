@@ -1,0 +1,19 @@
+<div class="alert alert-{{mensaje.type}}" *ngIf="mensaje.mostrar">{{mensaje.texto}}</div> 
+<!--<a class="btn btn-secondary" (click)="logout()">Cerrar sesión</a>-->
+<p>Si no quiere modificar algún parametro dejelo en 0</p>
+<form (ngSubmit)='onSubmit()' ngNativeValidate>
+    <div class="form-group">
+        <label for="inputvelocidadtarjetagrafica">Velocidad T. Grafica</label>
+        <input type="number" min="0" max="99999" class="form-control" required name="inputvelocidadtarjetagrafica"
+            [(ngModel)]="configuracion.velocidadtarjetagrafica">
+    </div>
+    <div class="form-group">
+        <label for="inputmemoriatarjetagrafica">Memoria T. Grafica</label>
+        <input type="number" min="0" max="99999" class="form-control" required name="inputmemoriatarjetagrafica"
+            [(ngModel)]="configuracion.memoriatarjetagrafica">
+    </div>
+    <div class="row">
+        <div class="col"><a class="btn btn-info btn-block" [routerLink]="['/catalogo']">Volver</a></div>
+        <div class="col"><button type="submit" class="btn btn-primary btn-block">Guardar</button></div>
+    </div>
+</form>

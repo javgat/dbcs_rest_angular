@@ -1,0 +1,44 @@
+<div class="alert alert-{{mensaje.type}}" *ngIf="mensaje.mostrar">{{mensaje.texto}}</div> 
+<!--<a class="btn btn-primary" (click)="logout()">Cerrar sesión</a>-->
+<form (ngSubmit)='onSubmit()' ngNativeValidate>
+    <div class="form-group">
+        <p>Tipo CPU</p>
+        <input type="radio" id="inputIntel" required name="inputTipoCPU" value="Intel" [(ngModel)]="configuracion.tipocpu"  >
+        <label for="inputIntel">Intel</label><br/>
+        <input type="radio" id="inputAMD" required name="inputTipoCPU" value="AMD" [(ngModel)]="configuracion.tipocpu">
+        <label for="inputAMD">AMD</label>
+    </div>
+    <div class="form-group">
+        <label for="inputvelocidadcpu">Velocidad CPU</label>
+        <input type="number" min="0" max="99999" class="form-control" required name="inputvelocidadcpu"
+            [(ngModel)]="configuracion.velocidadcpu">
+    </div>
+    <div class="form-group">
+        <label for="inputcapacidadram">Capacidad RAM</label>
+        <input type="number" min="0" max="99999" class="form-control" required name="inputcapacidadram"
+            [(ngModel)]="configuracion.capacidadram">
+    </div>
+    <div class="form-group">
+        <label for="inputcapacidaddd">Capacidad DD</label>
+        <input type="number" min="0" max="99999" class="form-control" required name="inputcapacidaddd"
+            [(ngModel)]="configuracion.capacidaddd">
+    </div>
+    <div class="form-group">
+        <label for="inputvelocidadtarjetagrafica">Velocidad T. Grafica</label>
+        <input type="number" min="0" max="99999" class="form-control" required name="inputvelocidadtarjetagrafica"
+            [(ngModel)]="configuracion.velocidadtarjetagrafica">
+    </div>
+    <div class="form-group">
+        <label for="inputmemoriatarjetagrafica">Memoria T. Grafica</label>
+        <input type="number" min="0" max="99999" class="form-control" required name="inputmemoriatarjetagrafica"
+            [(ngModel)]="configuracion.memoriatarjetagrafica">
+    </div>
+    <div class="form-group">
+        <label for="inputprecio">Precio ({{code}})</label>
+        <input type="number" step="0.01" min="0" max="99999" class="form-control" required name="inputprecio" [(ngModel)]="configuracion.precio">
+    </div>
+    <div class="row">
+    <div class="col"><a class="btn btn-info btn-block" [routerLink]="['/catalogo']">Volver</a></div>
+    <div class="col"><input type="submit" class="btn btn-primary btn-block" value="Guardar configuracion"></div>
+    </div>
+</form>

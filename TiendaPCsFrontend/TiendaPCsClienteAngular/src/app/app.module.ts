@@ -9,12 +9,21 @@ import { LoginComponent } from './login/login.component';
 
 import { ClienteApiRestService } from './shared/cliente-api-rest.service';
 import { DataService } from './shared/data.service';
+import { CatalogoComponent } from './catalogo/catalogo.component';
+import { NuevaConfiguracionComponent } from './nueva-configuracion/nueva-configuracion.component';
+import { ModificarConfiguracionComponent } from './modificar-configuracion/modificar-configuracion.component';
+import { SessionService } from './shared/session.service';
+import { FrankfurterService } from './shared/frankfurter.service';
+import { RestCountriesService } from './shared/rest-countries.service';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    CatalogoComponent,
+    NuevaConfiguracionComponent,
+    ModificarConfiguracionComponent
   ],
   imports: [
     BrowserModule,
@@ -24,7 +33,10 @@ import { DataService } from './shared/data.service';
   ],
   providers: [
     ClienteApiRestService,
-    DataService
+    DataService,
+    SessionService,
+    FrankfurterService,
+    RestCountriesService
     ],
   bootstrap: [AppComponent]
 })

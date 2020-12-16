@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs'
+import { Empleado, Mensaje, Tipo } from './app.model'
 
 
 @Injectable({
@@ -7,18 +8,31 @@ import { BehaviorSubject } from 'rxjs'
 })
 export class DataService {
   // Usamos mensajes para mostrar el resultado de la operacion
-  private mensaje = new BehaviorSubject('Nada'); // hay que inicializarlo
-  mensajeActual = this.mensaje.asObservable(); // Lo exponemos como un observable
+  private mensaje = new BehaviorSubject<Mensaje>(new Mensaje());
+  mensajeActual = this.mensaje.asObservable();
 
-  // Usamos esta variable para indicar si hay que mostrar o no el mensaje
-  private mostrarMensaje = new BehaviorSubject<boolean>(false);
-  mostrarMensajeActual = this.mostrarMensaje.asObservable();
   constructor() { }
-  // Para actualizar mensaje
-  cambiarMensaje(mensaje: string) {
+
+  cambiarMensaje(mensaje: Mensaje){
     this.mensaje.next(mensaje);
   }
-  cambiarMostrarMensaje(valor: boolean) {
-    this.mostrarMensaje.next(valor);
+
+  cambiarTextoMensaje(texto: string) {
+    let oldMsn = this.mensaje.value;
+    this.mensaje.next(new Mensaje(texto, oldMsn.type, oldMsn.mostrar));
+  }
+
+  cambiarMostrarMensaje(mostrar: boolean) {
+    let oldMsn = this.mensaje.value;
+    this.mensaje.next(new Mensaje(oldMsn.texto, oldMsn.type, mostrar));
+  }
+
+  cambiarTypeMensaje(type : Tipo){
+    let oldMsn = this.mensaje.value;
+    this.mensaje.next(new Mensaje(oldMsn.texto, type, oldMsn.mostrar));
+  }
+
+  borrarMensaje(){
+    this.cambiarMensaje(new Mensaje());
   }
 }

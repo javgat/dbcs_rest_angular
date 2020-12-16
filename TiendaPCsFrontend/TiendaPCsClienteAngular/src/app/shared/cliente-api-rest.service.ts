@@ -1,45 +1,68 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
-//import { Vino } from './app.model';
-import { Observable } from 'rxjs';
+import { Configuracionpc, Empleado, MensajeLogin } from './app.model';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Config } from 'protractor';
 @Injectable({ providedIn: 'root' })
 export class ClienteApiRestService {
 
-  // Esta linea es dependiente de la URL de la API Rest creada. MODIFICARLA ADECUADAMENTE
-  private static readonly BASE_URI = 'http://localhost:8080/TiendaPCsBackend/webresources';
-  constructor(private http: HttpClient) { } // inyectamos el modulo HttpClientModule
+  private headersEmpty = new HttpHeaders({
+    'Content-Type': 'application/json',
+    Authorization: ''
+  })
+  private headers = new BehaviorSubject(this.headersEmpty);
+  headersObs = this.headers.asObservable();
 
-  getLogin(id: String, pass: String) : Observable<HttpResponse<String>>{
-    let url = ClienteApiRestService.BASE_URI + '/login/' + id;
-    // de alguna manera meter la password
-    return this.http.get<String>(url, { observe: 'response' });
+  cambiarAuthorization(nif: string, pass: string) {
+    console.log(nif+':'+pass);
+    let encode = btoa(nif+':'+pass);
+    console.log(encode)
+    this.headers.next(new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: encode
+    }))
   }
-  /*
-  // Ejemplo de get con retorno del cuerpo del response
-  getAllVinos() {
-    //console.log("dentro de getAllVInos");
-    let url = ClienteApiRestService.BASE_URI + '/paraAngular';
-    return this.http.get<Vino[]>(url); // Retorna el cuerpo de la respuesta, sin modelo
+
+  vaciarPassword(){
+    this.headers.next(this.headersEmpty);
   }
-  // Ejemplo de get con retorno de la respuesta. En el resto de métodos lo hacemos de esta manera
-  getAllVinos_ConResponse(): Observable<HttpResponse<Vino[]>> {
-    let url = ClienteApiRestService.BASE_URI + '/paraAngular';
-    return this.http.get<Vino[]>(url, { observe: 'response' });
+
+  private static readonly BASE_URI = 'http://localhost:8080/TiendaPCsBackend/webresources';
+  constructor(private http: HttpClient) { }
+
+  getLogin(id: String, pass: String): Observable<HttpResponse<MensajeLogin>> {
+    let url = ClienteApiRestService.BASE_URI + '/login/' + id;    
+    let encode = btoa(pass as string);
+    return this.http.get<MensajeLogin>(url, {observe: 'response',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+         Authorization: encode
+      })});
   }
-  borrarVino(id: String): Observable<HttpResponse<any>> {
-    let url = ClienteApiRestService.BASE_URI + '/paraAngular/borrar/' + id;
-    return this.http.delete<any>(url, { observe: 'response' });
+
+  getEmpleado(nif: String): Observable<HttpResponse<Empleado>>{
+    let url = ClienteApiRestService.BASE_URI + '/empleado/'+nif;
+    return this.http.get<Empleado>(url, {observe : 'response', headers: this.headers.value});
   }
-  anadirVino(vino: Vino): Observable<HttpResponse<any>> {
-    let url = ClienteApiRestService.BASE_URI + '/paraAngular';
-    return this.http.post<Vino>(url, vino, { observe: 'response' });
+
+  getAllConfiguracionpc() : Observable<HttpResponse<Configuracionpc[]>>{
+    let url = ClienteApiRestService.BASE_URI + '/configuracion';
+    return this.http.get<Configuracionpc[]>(url, {observe: 'response', headers: this.headers.value});
   }
-  modificarCom(id: String, vino: Vino): Observable<HttpResponse<any>> {
-    let url = ClienteApiRestService.BASE_URI + '/paraAngular/' + id;
-    return this.http.put<Vino>(url, vino, { observe: 'response' });
+
+  borrarConfiguracion(id : Number) : Observable<HttpResponse<any>>{
+    let url = ClienteApiRestService.BASE_URI + '/configuracion/'+id;
+    return this.http.delete<any>(url, {observe: 'response', headers: this.headers.value});
   }
-  getVino(id: String): Observable<HttpResponse<Vino>> {
-    let url = ClienteApiRestService.BASE_URI + '/paraAngular/' + id;
-    return this.http.get<Vino>(url, { observe: 'response' });
-  }*/
+
+  addConfiguracionpc(conf : Configuracionpc) : Observable<HttpResponse<any>>{
+    let url = ClienteApiRestService.BASE_URI + '/configuracion';
+    return this.http.post<Configuracionpc>(url, conf, {observe: 'response', headers: this.headers.value})
+  }
+
+  modificarConfiguracionpc(conf : Configuracionpc) : Observable<HttpResponse<any>>{
+    let url = ClienteApiRestService.BASE_URI + '/configuracion/'+conf.idconfiguracion;
+    return this.http.put<Configuracionpc>(url, conf, {observe: 'response', headers: this.headers.value})
+  }
+  
 }
