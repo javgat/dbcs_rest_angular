@@ -50,6 +50,7 @@ export class CatalogoComponent implements OnInit {
         this.code = code
       }
     )
+    //Si no esta autenticado vuelve al login
     this.session.autenticadoObs.subscribe(
       auth => {
         if (!auth)
@@ -66,6 +67,7 @@ export class CatalogoComponent implements OnInit {
     this.router.navigate(['login']);
   }
 
+  //modifica las configuraciones del cliente en base al factor que se ha hallado
   configsPrecio() {
     for (let conf of this.configs) {
       //console.log("Precio antes: " + conf.precio);
@@ -74,6 +76,7 @@ export class CatalogoComponent implements OnInit {
     }
   }
 
+  // Obtiene las configuraciones desde la api y las guarda en el cliente
   getConfigs_AccesoResponse() {
     this.clienteApiRest.getAllConfiguracionpc().subscribe(
       resp => {
@@ -93,6 +96,7 @@ export class CatalogoComponent implements OnInit {
     
   }
 
+  //Borra una configuracion de la base de datos
   borrar(id: Number) {
     this.clienteApiRest.borrarConfiguracion(id).subscribe(
       resp => {
@@ -111,6 +115,7 @@ export class CatalogoComponent implements OnInit {
     )
   }
 
+  //Cierra sesion
   logout() {
     this.session.logout(this.datos, this.clienteApiRest);
   }

@@ -39,6 +39,7 @@ export class ModificarConfiguracionComponent implements OnInit {
     this.datos.mensajeActual.subscribe(
       mens => this.mensaje = mens
     )
+    // Si no esta la sesion iniciada vuelve al login
     this.session.autenticadoObs.subscribe(
       auth => {
         if (!auth)

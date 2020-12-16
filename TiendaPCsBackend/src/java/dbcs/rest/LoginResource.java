@@ -27,9 +27,11 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 /**
- * REST Web Service
+ * Recurso REST para la autenticacion inicial
+ * Utilizamos base64 pero en una aplicacion real seria mas complejo con por ejemplo tokens
+ * y tendria sentido utilizar un recurso especifico para el login, como hacemos.
  *
- * @author Javier
+ * @author Javier Gaton Herguedas y Javier Moro Garcia
  */
 @Path("/login")
 public class LoginResource implements ContainerResponseFilter{
@@ -57,8 +59,10 @@ public class LoginResource implements ContainerResponseFilter{
     }
 
     /**
-     * Retrieves representation of an instance of dbcs.rest.LoginResource
-     * @return an instance of java.lang.String
+     * Indica si consigue iniciar sesion, y si no lo consigue explica cual es el error
+     * @param nif Nif o cif del empleado que intenta acceder
+     * @param headers Cabeceras con la autenticacion (password)
+     * @return Response que tiene el codigo de operacion y un mensaje describiendo como ha ido la operacion al detalle
      */
     @Path("/{nif}")
     @GET
@@ -66,38 +70,45 @@ public class LoginResource implements ContainerResponseFilter{
     public Response getLogin(@PathParam("nif") String nif, @Context HttpHeaders headers) {
         try{
             String pass_encoded = headers.getRequestHeader("Authorization").get(0);
+            //Comprueba la password con el mensaje decodificado en base64
             String password = new String(Base64.getDecoder().decode(pass_encoded.getBytes()));
             System.out.println("Usuario: "+nif+", Password:"+password);
             Empleado emp = empF.find(nif);
-            if(emp == null){
+            if(emp == null){// Si no existe el empleado
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(makeResponseEntity(nif, AUTH_MISSING))
                         .build();
             }
-            if(authenticate(emp, password))
+            if(authenticate(emp, password))// Si si existe y la autenticacion es correcta
                 return Response.status(Response.Status.OK)
                     .entity(makeResponseEntity(nif, AUTH_OK))
                     .build();
-            else
+            else// Si existe pero la autenticacion es incorrecta
                 return Response.status(Response.Status.FORBIDDEN)
                         .entity(makeResponseEntity(nif, AUTH_WRONG))
                         .build();
-        }catch(Exception e){
+        }catch(Exception e){// Si el servidor falla
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)//Los status son correctos?
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(makeResponseEntity(nif, AUTH_ERROR))
                     .build();
         }
     }
     
+    /*
+     * Comprueba si la password de un empleado coincide con la indicada
+    */
     private boolean authenticate(Empleado emp, String password){
-        
         return emp.getUsuario().getPassword().equals(password);
     }
     
+    /*
+     * Transforma un mensaje en un objeto JSON del tipo {mensaje : mensaje}
+     * Quiza interesaria responder con el nif, asi que lo pedimos en la operacion
+     * por si fuera a tener que cambiarse en un futuro
+    */
     private String makeResponseEntity(String nif, String message){
         return "{\"mensaje\" : \""+message+"\"}";
-                //"{ \"nif\" : \""+nif+"\","
     }
 
     private EmpleadoFacadeLocal lookupEmpleadoFacadeLocal() {

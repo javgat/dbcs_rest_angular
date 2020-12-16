@@ -36,7 +36,9 @@ import javax.ws.rs.core.HttpHeaders;
 /**
  * REST Web Service
  *
- * @author Javier
+ * Recurso REST de Configuracion y Configuraciones.
+ * 
+ * @author Javier Gaton Herguedas y Javier Moro Garcia
  */
 @Path("/configuracion")
 public class ConfiguracionResource implements ContainerResponseFilter {
@@ -68,8 +70,9 @@ public class ConfiguracionResource implements ContainerResponseFilter {
     }
     
     /*
-    Devuelve true si la cabecera de autorizacion es valida, false si no
-    */
+     * Devuelve true si la cabecera de autorizacion es valida, false si no
+     * Tiene que corresponder a la concatenacion de <nif>:<password> de cualquier empleado
+     */
     private boolean isAuth(HttpHeaders headers){
         List<String> heads = headers.getRequestHeader("Authorization");
         if(heads==null || heads.isEmpty())
@@ -87,21 +90,23 @@ public class ConfiguracionResource implements ContainerResponseFilter {
     }
 
     /**
-     * Retrieves representation of an instance of dbcs.rest.ConfiguracionResource
-     * @return an instance of java.lang.String
+     * Devuelve todas las Configuracionpc que hay en la base de datos
+     * @param headers Cabecera con la autentificacion
+     * @return Respuesta con el codigo de operacion, si es exito devuelve un JsonARRAY con las configuraciones
+     * y si es error un mensaje de error
      */
     @GET
     @Produces("application/json")
     public Response getCatalogo(@Context HttpHeaders headers) {
         try{
-            if(!isAuth(headers))
+            if(!isAuth(headers))//Si no esta autenticado
                 return Response.status(Response.Status.FORBIDDEN)
                         .entity(getMessage(ERR_AUTH))
                         .build();
-            return Response.status(Response.Status.OK)
+            return Response.status(Response.Status.OK)// Si si esta autenticado
                     .entity(confF.findAll().toArray(new Configuracionpc[0]))
                     .build();
-        }catch(Exception e){
+        }catch(Exception e){ //En caso de que el servidor tenga un error al acceder
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(getMessage(SERV_ERR))
@@ -109,29 +114,40 @@ public class ConfiguracionResource implements ContainerResponseFilter {
         }
     }
     
+    /*
+     * Transforma una cadena (String) en una cadena que sigue el formato json {message: <mensaje>}
+     * Es para los outputs para informar en detalle del error
+     */
     private String getMessage(String message){
         return "{\"message\" : \""+message+"\"}";
     }
     
+    /**
+     * Elimina una configuracion
+     * @param idConf Id de la configuracion a eliminar
+     * @param headers Cabecera con la autentificacion
+     * @return Response con el codigo de operacion, y en caso de error el mensaje del error
+     */
     @DELETE
     @Path("{idconfig}")
     @Produces("application/json")
     public Response deleteConfig(@PathParam("idconfig") Integer idConf, @Context HttpHeaders headers){
         try{
-            if(!isAuth(headers))
+            if(!isAuth(headers))//Si no esta autenticado o no es valida la autenticacion
                 return Response.status(Response.Status.FORBIDDEN)
                         .entity(getMessage(ERR_AUTH))
                         .build();
-            if(confF.removeConfig(idConf))
+            // Si si que esta autenticado
+            if(confF.removeConfig(idConf))//Si consigue eliminar con exito la configuracion
                 return Response
                         .status(Response.Status.OK)
                         .build();
-            else
+            else // Si no consigue eliminar con exito la configuracion porque no existe ese id o por otra razon
                 return Response
                         .status(Response.Status.FORBIDDEN)
                         .entity(getMessage(CONF_BORR_ERROR))
                         .build();
-        }catch(Exception e){
+        }catch(Exception e){ // Si hay un error en el servidor
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(getMessage(SERV_ERR))
@@ -139,18 +155,24 @@ public class ConfiguracionResource implements ContainerResponseFilter {
         }
     }
 
-    
+    /**
+     * Recibe una configuracion del cliente y la guarda
+     * @param conf Configuracion en formato JSON
+     * @param headers Cabecera con autenticacion
+     * @return Response con el codigo de operacion, si es exito la ubicacion de la configuracion y si no un mensaje de error
+     */
     @POST
     @Produces("application/json")
     public Response postConfig(JsonObject conf, @Context HttpHeaders headers){
         try{
-            if(!isAuth(headers))
+            if(!isAuth(headers)) //Si la autenticacion no es correcta
                 return Response.status(Response.Status.FORBIDDEN)
                         .entity(getMessage(ERR_AUTH))
                         .build();
             if(!(conf.containsKey("velocidadcpu") && conf.containsKey("capacidadram") &&
                     conf.containsKey("capacidaddd") && conf.containsKey("velocidadtarjetagrafica") &&
                     conf.containsKey("memoriatarjetagrafica") && conf.containsKey("tipocpu"))){
+                // Si el objeto json no contiene los parametros necesarios
                 return Response.status(Response.Status.FORBIDDEN)
                         .entity(getMessage(CONF_ADD_MISSING))
                         .build();
@@ -165,21 +187,21 @@ public class ConfiguracionResource implements ContainerResponseFilter {
                 float precio = conf.containsKey("precio") ? (float)conf.getJsonNumber("precio").doubleValue(): 0f;
                 int idConfig = confF.addConfiguracion(velCPU, capRAM, capDD, velTarGraf, memTarGraf, tipoCPU, precio);
                 String id = Integer.toString(idConfig);
-                if(idConfig!=-1)
+                if(idConfig!=-1)//Si se genera el objeto json devuelve su ubicacion
                     return Response.status(Response.Status.CREATED)
                             .entity("{\"Location\" : \"/configuracion/"+id+"\"}")
                             .build();
-                else
+                else // Si no se puede generar el objeto json (la id corresponde a -1 entonces)
                     return Response.status(Response.Status.BAD_REQUEST)
                             .entity(getMessage(CONF_ADD_FAIL))
                             .build();
-            }catch(ClassCastException cce){
+            }catch(ClassCastException cce){ // Si hay un error en el formato de los datos de entrada
                 Logger.getLogger(getClass().getName()).log(Level.WARNING, "exception caught", cce);
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(getMessage(CONF_ADD_WRONG))
                         .build();
             }
-        }catch(Exception e){
+        }catch(Exception e){ // Si hay un error en el servidor
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(getMessage(SERV_ERR))
@@ -187,11 +209,12 @@ public class ConfiguracionResource implements ContainerResponseFilter {
         }
     }
     
-    
     /**
-     * PUT method for updating or creating an instance of ConfiguracionResource
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
+     * Modifica una configuracion existente
+     * @param idConf Id de la configuracion a modificar
+     * @param conf Datos de la configuracion a cambiar. Lo que este como 0 o no este, significa mantener como estaba
+     * @param headers Cabecera de autenticacion
+     * @return Response con el codigo de operacion, si es un error tambien el mensaje de error
      */
     @PUT
     @Path("{idConfig}")
@@ -232,6 +255,9 @@ public class ConfiguracionResource implements ContainerResponseFilter {
         }
     }
     
+    /*
+    * Metodo para que si en un objeto json no hay cierta clave, devuelve un 0 en su lugar
+    */
     private int getIntDefault(String clave, JsonObject conf){
         return conf.containsKey(clave) ? conf.getInt(clave) : 0;
     }

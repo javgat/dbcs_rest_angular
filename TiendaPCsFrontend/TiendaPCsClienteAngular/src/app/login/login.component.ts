@@ -65,7 +65,7 @@ export class LoginComponent implements OnInit {
     );
   }
 
-
+// Aqui el login ya ha funcionado, intenta acceder a los datos del empleado a partir del nif por la API
   copiaEmpleado(nif: String) {
     this.clienteApiRest.getEmpleado(nif).subscribe(
       resp => {
@@ -88,6 +88,7 @@ export class LoginComponent implements OnInit {
     )
   }
 
+  // Ya tiene el empleado, intenta acceder a los datos del pais, primero al codigo
   updateCodeFactor(emp: Empleado) {
     // llamo rest-countries con emp.pais
     let defaultCode: String = "EUR";
@@ -116,6 +117,7 @@ export class LoginComponent implements OnInit {
     )
   }
 
+  //Ya ha accedido al codigo del pais, llama a Frankfurter para acceder al factor y lo guarda en un BehaviorSubject
   private updateFactor(code: String) {
     this.frankS.getFactor(code).subscribe(
       resp => {
@@ -136,6 +138,7 @@ export class LoginComponent implements OnInit {
     )
   }
 
+  // Cambia a la vista del catalogo
   moveCatalogo() {
     console.log("Redireccionando al catalogo...");
     this.router.navigate(['catalogo']);

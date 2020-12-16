@@ -28,9 +28,9 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 
 /**
- * REST Web Service
+ * Recurso REST para el acceso a los empleados
  *
- * @author Javier
+ * @author Javier Gaton Herguedas y Javier Moro Garcia
  */
 @Path("/empleado")
 public class EmpleadoResource implements ContainerResponseFilter{
@@ -56,6 +56,12 @@ public class EmpleadoResource implements ContainerResponseFilter{
         response.getHeaders().putSingle("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }
     
+    /*
+     * 
+     * @param emp Empleado a intentar autenticar
+     * @param auth Cadena con el formato <nif>:<password> en base64.
+     * @return True si corresponde con el empleado, false si no
+     */
     private boolean isAuth(Empleado emp, String auth){
         String decoded = new String(Base64.getDecoder().decode(auth.getBytes()));
         String[] split = decoded.split(":");
@@ -68,29 +74,35 @@ public class EmpleadoResource implements ContainerResponseFilter{
         return true;
     }
     
+    /**
+     * Obtiene los datos
+     * @param nif Nif o Cif del empleado del que intenta obtener los datos
+     * @param headers Cabeceras con la Autenticacion
+     * @return Respuesta con codigo de operacion y el empleado pedido en caso de exito,
+     * o un mensaje de error si falla.
+     */
     @GET
     @Path("{nif}")
     @Produces("application/json")
     public Response getEmpleado(@PathParam("nif") String nif, @Context HttpHeaders headers){// Habra que exigir autenticacion
         try{
-            
             Empleado emp = empleadoFacade.find(nif);
-            if(emp==null){
+            if(emp==null){//Si no existe un empleado con ese nif
                 return Response.status(Response.Status.NOT_FOUND)
                     .entity("{ \"message\": \""+EMP_NOT_FOUND+"\"}")
                     .build();
             }
             List<String> heads = headers.getRequestHeader("Authorization");
-            if(heads==null || heads.isEmpty() || !isAuth(emp, heads.get(0)))
+            if(heads==null || heads.isEmpty() || !isAuth(emp, heads.get(0)))//Si la autenticacion falta o es incorrecta
                 return Response.status(Response.Status.FORBIDDEN)
                         .entity("{ \"message\": \""+EMP_AUTH+"\"}")
                         .build();
             String pais = emp.getUsuario().getPais();
-            return Response.status(Response.Status.OK)
+            return Response.status(Response.Status.OK)// En este punto devuelve el nif y el pais del empleado
                     .entity("{\"nif\" : \""+nif+"\","
                             + "\"pais\" : \""+pais+"\"}")
                     .build();
-        }catch(Exception e){
+        }catch(Exception e){ //En caso de que fallara el servidor
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity("{ \"message\": \""+EMP_ERROR+"\"}")
